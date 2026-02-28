@@ -1,22 +1,24 @@
 # Edith - Iteration Notes
 
-## Current State: v1.1 Line Number Gutter Added ✓
+## Current State: v1.2 Zoom & Font Size Menus ✓
 
-Build and tests verified 2026-02-28.
+Build and tests verified 2025-01.
 
 ## What's Done
 - File > New Text Document (⌘N)
 - Settings window (⌘,) with three tabs: Text Encodings, Appearance, Editor Defaults
 - Restore Defaults button in settings
 - Line number gutter with proper alignment
-- 45 unit/integration tests protecting gutter functionality
+- View > Show/Hide Line Numbers toggle
+- View > Zoom In (⌘=), Zoom Out (⌘-), Actual Size (⌘0)
+- Format > Font > Bigger (⇧⌘+), Smaller (⌥⌘-)
+- Actual Size disabled when already at default zoom
+- Zoom In/Out disabled at bounds (4x max, 0.25x min)
+- 146 unit tests + 26 UI tests
 
 ## Tests
-Run `./scripts/test.sh` to verify:
-- Text visibility in textarea
-- Line numbers appearing top-to-bottom
-- Line number alignment with text lines
-- Font/color/layout properties
+Run `./scripts/test.sh` to verify all functionality.
+UI tests cover zoom menu states and keyboard shortcuts.
 
 ## Suggested Future Enhancements
 
