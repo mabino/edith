@@ -49,7 +49,7 @@ struct EdithApp: App {
                 Button("Actual Size") {
                     zoomState?.resetZoom()
                 }
-                .keyboardShortcut("0", modifiers: [.command, .option])
+                .keyboardShortcut(KeyEquivalent("0"), modifiers: [.command, .option])
                 .disabled(zoomState == nil)
             }
             

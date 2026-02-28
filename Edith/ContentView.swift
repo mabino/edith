@@ -51,8 +51,10 @@ struct ContentView: View {
     @StateObject private var zoomState = DocumentZoomState()
     
     var body: some View {
-        EditorView(text: $document.text, documentZoom: zoomState.zoom, documentFontSizeOffset: zoomState.fontSizeOffset)
+        EditorView(text: $document.text, zoomState: zoomState)
             .environmentObject(settingsManager)
-            .focusedSceneValue(\.documentZoomState, zoomState)
+            .focusedValue(\.documentZoomState, zoomState)
+            .onReceive(zoomState.$zoom) { _ in }  // Force view update on zoom change
+            .onReceive(zoomState.$fontSizeOffset) { _ in }  // Force view update on font change
     }
 }

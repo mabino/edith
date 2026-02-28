@@ -9,10 +9,7 @@ import AppKit
 struct EditorView: NSViewRepresentable {
     @Binding var text: String
     @EnvironmentObject var settingsManager: SettingsManager
-    
-    // Per-document adjustments (not persisted)
-    var documentZoom: Double
-    var documentFontSizeOffset: Double
+    @ObservedObject var zoomState: DocumentZoomState
     
     func makeNSView(context: Context) -> LineNumberScrollView {
         let scrollView = LineNumberScrollView()
@@ -42,9 +39,9 @@ struct EditorView: NSViewRepresentable {
     private func applySettings(to scrollView: LineNumberScrollView) {
         let textView = scrollView.textView
         // Combine settings magnification with per-document zoom
-        let effectiveMagnification = settingsManager.magnification * documentZoom
+        let effectiveMagnification = settingsManager.magnification * zoomState.zoom
         // Combine settings font size with per-document offset
-        let effectiveFontSize = settingsManager.fontSize + documentFontSizeOffset
+        let effectiveFontSize = settingsManager.fontSize + zoomState.fontSizeOffset
         let size = CGFloat(effectiveFontSize * effectiveMagnification)
         let font = NSFont(name: settingsManager.fontName, size: size)
             ?? NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
