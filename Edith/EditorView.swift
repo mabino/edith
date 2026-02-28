@@ -55,7 +55,7 @@ struct EditorView: NSViewRepresentable {
         }
         
         scrollView.showLineNumbers = settingsManager.showLineNumbers
-        textView.layoutManager?.showsInvisibleCharacters = settingsManager.showInvisibleCharacters
+        scrollView.customLayoutManager.showInvisibleCharacters = settingsManager.showInvisibleCharacters
     }
     
     func makeCoordinator() -> Coordinator {
@@ -84,6 +84,7 @@ class LineNumberScrollView: NSView {
     let scrollView: NSScrollView
     let textView: NSTextView
     let lineNumberView: LineNumberView
+    let customLayoutManager: InvisibleCharacterLayoutManager
     
     var showLineNumbers: Bool = true {
         didSet {
@@ -93,8 +94,21 @@ class LineNumberScrollView: NSView {
     }
     
     override init(frame: NSRect) {
-        // Create text view
-        textView = NSTextView()
+        // Create text storage
+        let textStorage = NSTextStorage()
+        
+        // Create custom layout manager for invisible characters
+        customLayoutManager = InvisibleCharacterLayoutManager()
+        textStorage.addLayoutManager(customLayoutManager)
+        
+        // Create text container
+        let textContainer = NSTextContainer()
+        textContainer.widthTracksTextView = true
+        textContainer.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        customLayoutManager.addTextContainer(textContainer)
+        
+        // Create text view with custom text system
+        textView = NSTextView(frame: .zero, textContainer: textContainer)
         textView.isRichText = false
         textView.allowsUndo = true
         textView.isAutomaticQuoteSubstitutionEnabled = false
@@ -329,6 +343,82 @@ class LineNumberView: NSView {
                 break
             }
             idx = NSMaxRange(range)
+        }
+    }
+}
+
+// MARK: - Custom Layout Manager for Invisible Characters
+class InvisibleCharacterLayoutManager: NSLayoutManager {
+    
+    var showInvisibleCharacters: Bool = false {
+        didSet {
+            invalidateDisplay(forCharacterRange: NSRange(location: 0, length: textStorage?.length ?? 0))
+        }
+    }
+    
+    // Light gray color for invisible characters
+    private let invisibleColor = NSColor(calibratedWhite: 0.7, alpha: 1.0)
+    
+    // Unicode characters for invisibles
+    private let spaceGlyph: String = "·"        // Middle dot for space
+    private let newlineGlyph: String = "↵"      // Return symbol for newline  
+    private let tabGlyph: String = "△"          // Delta for tab
+    
+    override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
+        super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
+        
+        guard showInvisibleCharacters,
+              let textStorage = textStorage,
+              let textContainer = textContainers.first else { return }
+        
+        let characterRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
+        let string = textStorage.string as NSString
+        
+        string.enumerateSubstrings(in: characterRange, options: .byComposedCharacterSequences) { [weak self] substring, substringRange, _, _ in
+            guard let self = self, let char = substring else { return }
+            
+            var glyph: String?
+            
+            switch char {
+            case " ":
+                glyph = self.spaceGlyph
+            case "\n":
+                glyph = self.newlineGlyph
+            case "\t":
+                glyph = self.tabGlyph
+            case "\r":
+                glyph = self.newlineGlyph
+            default:
+                return
+            }
+            
+            guard let glyphToDraw = glyph else { return }
+            
+            let glyphIndex = self.glyphIndexForCharacter(at: substringRange.location)
+            var lineFragmentRect = NSRect.zero
+            self.lineFragmentRect(forGlyphAt: glyphIndex, effectiveRange: nil, withoutAdditionalLayout: true)
+            let glyphLocation = self.location(forGlyphAt: glyphIndex)
+            let lineRect = self.lineFragmentRect(forGlyphAt: glyphIndex, effectiveRange: nil)
+            
+            // Get the font at this location
+            var effectiveRange = NSRange()
+            let attrs = textStorage.attributes(at: substringRange.location, effectiveRange: &effectiveRange)
+            let font = attrs[.font] as? NSFont ?? NSFont.systemFont(ofSize: 12)
+            
+            // Create attributes for invisible character
+            let invisibleAttrs: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: self.invisibleColor
+            ]
+            
+            // Calculate position
+            let point = NSPoint(
+                x: origin.x + lineRect.origin.x + glyphLocation.x,
+                y: origin.y + lineRect.origin.y
+            )
+            
+            // Draw the invisible character
+            glyphToDraw.draw(at: point, withAttributes: invisibleAttrs)
         }
     }
 }
