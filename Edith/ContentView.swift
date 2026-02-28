@@ -54,5 +54,9 @@ struct ContentView: View {
         EditorView(text: $document.text, zoomState: zoomState)
             .environmentObject(settingsManager)
             .focusedSceneValue(\.documentZoomState, zoomState)
+            .onReceive(zoomState.$zoom) { newZoom in
+                // Sync to settingsManager for menu state updates
+                settingsManager.activeDocumentZoom = newZoom
+            }
     }
 }

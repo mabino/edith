@@ -140,6 +140,70 @@ final class ZoomUITests: XCTestCase {
     
     // MARK: - Debug Helper Tests
     
+    func testActualSizeDisabledAtDefaultZoom() {
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let actualSize = app.menuBars.menuItems["Actual Size"]
+        XCTAssertTrue(actualSize.exists, "Actual Size should exist")
+        XCTAssertFalse(actualSize.isEnabled, "Actual Size should be DISABLED at default zoom")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testActualSizeEnabledAfterZoomIn() {
+        // Zoom in first
+        app.menuBars.menuBarItems["View"].click()
+        app.menuBars.menuItems["Zoom In"].click()
+        sleep(1)
+        
+        // Check Actual Size is now enabled
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let actualSize = app.menuBars.menuItems["Actual Size"]
+        XCTAssertTrue(actualSize.isEnabled, "Actual Size should be ENABLED after zooming in")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testActualSizeEnabledAfterZoomOut() {
+        // Zoom out first
+        app.menuBars.menuBarItems["View"].click()
+        app.menuBars.menuItems["Zoom Out"].click()
+        sleep(1)
+        
+        // Check Actual Size is now enabled
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let actualSize = app.menuBars.menuItems["Actual Size"]
+        XCTAssertTrue(actualSize.isEnabled, "Actual Size should be ENABLED after zooming out")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testActualSizeDisabledAfterReset() {
+        // Zoom in first
+        app.menuBars.menuBarItems["View"].click()
+        app.menuBars.menuItems["Zoom In"].click()
+        sleep(1)
+        
+        // Reset to actual size
+        app.menuBars.menuBarItems["View"].click()
+        app.menuBars.menuItems["Actual Size"].click()
+        sleep(1)
+        
+        // Check Actual Size is now disabled again
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let actualSize = app.menuBars.menuItems["Actual Size"]
+        XCTAssertFalse(actualSize.isEnabled, "Actual Size should be DISABLED after reset to 1.0")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
     func testPrintViewMenuItems() {
         // Click on the View menu bar item
         let viewMenuBarItem = app.menuBars.menuBarItems["View"]

@@ -26,19 +26,19 @@ struct ZoomCommands: Commands {
                 zoomState?.zoomIn()
             }
             .keyboardShortcut("=", modifiers: .command)
-            .disabled(zoomState == nil)
+            .disabled(zoomState == nil || settingsManager.activeDocumentZoom >= 4.0)
             
             Button("Zoom Out") {
                 zoomState?.zoomOut()
             }
             .keyboardShortcut("-", modifiers: .command)
-            .disabled(zoomState == nil)
+            .disabled(zoomState == nil || settingsManager.activeDocumentZoom <= 0.25)
             
             Button("Actual Size") {
                 zoomState?.resetZoom()
             }
             .keyboardShortcut("0", modifiers: .command)
-            .disabled(zoomState == nil)
+            .disabled(zoomState == nil || settingsManager.activeDocumentZoom == 1.0)
         }
         
         // Format > Font menu for font size adjustments

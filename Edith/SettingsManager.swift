@@ -80,6 +80,9 @@ class SettingsManager: ObservableObject {
     @AppStorage("showInvisibleCharacters") var showInvisibleCharacters: Bool = false
     @AppStorage("showLineNumbers") var showLineNumbers: Bool = true
     
+    // Transient state for active document (not persisted)
+    @Published var activeDocumentZoom: Double = 1.0
+    
     // Default values for restoration
     static let defaultFontName = "Menlo"
     static let defaultFontSize: Double = 13.0
