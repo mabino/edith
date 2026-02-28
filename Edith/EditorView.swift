@@ -289,7 +289,11 @@ class LineNumberView: NSView {
         // Draw visible line numbers
         idx = charRange.location
         while idx <= NSMaxRange(charRange) {
-            if idx >= content.length && content.length > 0 {
+            // Handle the case where cursor is on a new empty line after trailing newline
+            let isTrailingEmptyLine = idx >= content.length && content.length > 0 && 
+                (content.character(at: content.length - 1) == 0x0A || content.character(at: content.length - 1) == 0x0D)
+            
+            if idx >= content.length && content.length > 0 && !isTrailingEmptyLine {
                 break
             }
             
@@ -297,7 +301,18 @@ class LineNumberView: NSView {
             let range = content.lineRange(for: NSRange(location: safeIdx, length: 0))
             let glyphIdx = layoutManager.glyphIndexForCharacter(at: safeIdx)
             
-            let lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIdx, effectiveRange: nil)
+            var lineRect = layoutManager.lineFragmentRect(forGlyphAt: glyphIdx, effectiveRange: nil)
+            
+            // For trailing empty line, calculate position below the last line
+            if isTrailingEmptyLine {
+                let lastGlyphIdx = layoutManager.glyphIndexForCharacter(at: content.length - 1)
+                let lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIdx, effectiveRange: nil)
+                lineRect = NSRect(x: lastLineRect.origin.x, 
+                                  y: lastLineRect.origin.y + lastLineRect.height,
+                                  width: lastLineRect.width, 
+                                  height: lastLineRect.height)
+            }
+            
             // Convert from text view coordinates to our view coordinates
             let yPos = lineRect.origin.y + inset.height - visibleRect.origin.y
             
@@ -309,6 +324,10 @@ class LineNumberView: NSView {
             s.draw(at: pt, withAttributes: attrs)
             
             lineNum += 1
+            
+            if isTrailingEmptyLine {
+                break
+            }
             idx = NSMaxRange(range)
         }
     }
