@@ -10,6 +10,7 @@ struct EditorView: NSViewRepresentable {
     @Binding var text: String
     @EnvironmentObject var settingsManager: SettingsManager
     @ObservedObject var zoomState: DocumentZoomState
+    @Binding var cursorPosition: CursorPosition
     
     func makeNSView(context: Context) -> LineNumberScrollView {
         let scrollView = LineNumberScrollView()
@@ -75,6 +76,20 @@ struct EditorView: NSViewRepresentable {
             guard let textView = notification.object as? NSTextView else { return }
             parent.text = textView.string
             scrollView?.lineNumberView.needsDisplay = true
+            updateCursorPosition()
+        }
+        
+        func textViewDidChangeSelection(_ notification: Notification) {
+            updateCursorPosition()
+        }
+        
+        private func updateCursorPosition() {
+            guard let textView = textView else { return }
+            let selectedRange = textView.selectedRange()
+            let newPosition = CursorPosition.calculate(for: textView.string, at: selectedRange.location)
+            DispatchQueue.main.async {
+                self.parent.cursorPosition = newPosition
+            }
         }
     }
 }

@@ -16,12 +16,14 @@
 		007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 201; };
 		008 /* DocumentRestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107; };
 		009 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108; };
+		010 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109; };
 		T01 /* LineNumberGutterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T10; };
 		T03 /* TextEncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T12; };
 		T04 /* MenuStructureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T13; };
 		T05 /* SettingsPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T14; };
 		T06 /* ZoomFunctionalityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T15; };
 		T07 /* SessionRestoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T16; };
+		T08 /* StatusBarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T17; };
 		U01 /* ZoomUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = U10; };
 		U03 /* SessionRestoreUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = U12; };
 /* End PBXBuildFile section */
@@ -52,6 +54,7 @@
 		106 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		107 /* DocumentRestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentRestoreManager.swift; sourceTree = "<group>"; };
 		108 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
+		109 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		201 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		301 /* Edith.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Edith.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401 /* Edith.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Edith.entitlements; sourceTree = "<group>"; };
@@ -62,6 +65,7 @@
 		T14 /* SettingsPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPersistenceTests.swift; sourceTree = "<group>"; };
 		T15 /* ZoomFunctionalityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomFunctionalityTests.swift; sourceTree = "<group>"; };
 		T16 /* SessionRestoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestoreTests.swift; sourceTree = "<group>"; };
+		T17 /* StatusBarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarTests.swift; sourceTree = "<group>"; };
 		U10 /* ZoomUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomUITests.swift; sourceTree = "<group>"; };
 		U11 /* EdithUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EdithUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		U12 /* SessionRestoreUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestoreUITests.swift; sourceTree = "<group>"; };
@@ -99,6 +103,7 @@
 				106 /* SettingsView.swift */,
 				107 /* DocumentRestoreManager.swift */,
 				108 /* HelpView.swift */,
+				109 /* StatusBar.swift */,
 				201 /* Assets.xcassets */,
 				401 /* Edith.entitlements */,
 			);
@@ -124,6 +129,7 @@
 				T14 /* SettingsPersistenceTests.swift */,
 				T15 /* ZoomFunctionalityTests.swift */,
 				T16 /* SessionRestoreTests.swift */,
+				T17 /* StatusBarTests.swift */,
 			);
 			path = EdithTests;
 			sourceTree = "<group>";
@@ -250,6 +256,7 @@
 				006 /* SettingsView.swift in Sources */,
 				008 /* DocumentRestoreManager.swift in Sources */,
 				009 /* HelpView.swift in Sources */,
+				010 /* StatusBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +270,7 @@
 				T05 /* SettingsPersistenceTests.swift in Sources */,
 				T06 /* ZoomFunctionalityTests.swift in Sources */,
 				T07 /* SessionRestoreTests.swift in Sources */,
+				T08 /* StatusBarTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

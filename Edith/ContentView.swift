@@ -53,6 +53,7 @@ struct ContentView: View {
     @StateObject private var fileWatcher = FileWatcher()
     
     @State private var showFileChangedBanner = false
+    @State private var cursorPosition = CursorPosition()
     
     var body: some View {
         VStack(spacing: 0) {
@@ -68,8 +69,13 @@ struct ContentView: View {
                 )
             }
             
-            EditorView(text: $document.text, zoomState: zoomState)
+            EditorView(text: $document.text, zoomState: zoomState, cursorPosition: $cursorPosition)
                 .environmentObject(settingsManager)
+            
+            // Status Bar
+            if settingsManager.showStatusBar {
+                StatusBar(document: $document, cursorPosition: $cursorPosition)
+            }
         }
         .focusedSceneValue(\.documentZoomState, zoomState)
         .onReceive(zoomState.$zoom) { newZoom in

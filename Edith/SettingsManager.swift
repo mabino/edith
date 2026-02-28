@@ -22,6 +22,51 @@ enum AppearanceMode: Int, CaseIterable, Identifiable {
     }
 }
 
+enum LineEnding: Int, CaseIterable, Identifiable {
+    case lf = 0      // Unix
+    case cr = 1      // Legacy Mac
+    case crlf = 2    // Windows
+    
+    var id: Int { rawValue }
+    
+    var description: String {
+        switch self {
+        case .lf: return "Unix (LF)"
+        case .cr: return "Legacy Mac (CR)"
+        case .crlf: return "Windows (CRLF)"
+        }
+    }
+    
+    var shortDescription: String {
+        switch self {
+        case .lf: return "LF"
+        case .cr: return "CR"
+        case .crlf: return "CRLF"
+        }
+    }
+    
+    var characters: String {
+        switch self {
+        case .lf: return "\n"
+        case .cr: return "\r"
+        case .crlf: return "\r\n"
+        }
+    }
+    
+    static func detect(in text: String) -> LineEnding {
+        // Check for CRLF first (most specific)
+        if text.contains("\r\n") {
+            return .crlf
+        }
+        // Check for CR only (legacy Mac)
+        if text.contains("\r") {
+            return .cr
+        }
+        // Default to LF (Unix)
+        return .lf
+    }
+}
+
 enum TextEncodingOption: Int, CaseIterable, Identifiable {
     case utf8 = 0
     case utf16 = 1
@@ -84,6 +129,7 @@ class SettingsManager: ObservableObject {
     @AppStorage("spacesPerTab") var spacesPerTab: Int = 4
     @AppStorage("showInvisibleCharacters") var showInvisibleCharacters: Bool = false
     @AppStorage("showLineNumbers") var showLineNumbers: Bool = true
+    @AppStorage("showStatusBar") var showStatusBar: Bool = true
     
     // Transient state for active document (not persisted)
     @Published var activeDocumentZoom: Double = 1.0
@@ -98,6 +144,7 @@ class SettingsManager: ObservableObject {
     static let defaultSpacesPerTab: Int = 4
     static let defaultShowInvisibleCharacters = false
     static let defaultShowLineNumbers = true
+    static let defaultShowStatusBar = true
     static let defaultTextEncoding = TextEncodingOption.utf8.rawValue
     static let defaultAppearanceMode = AppearanceMode.system.rawValue
     
@@ -132,6 +179,7 @@ class SettingsManager: ObservableObject {
         spacesPerTab = Self.defaultSpacesPerTab
         showInvisibleCharacters = Self.defaultShowInvisibleCharacters
         showLineNumbers = Self.defaultShowLineNumbers
+        showStatusBar = Self.defaultShowStatusBar
         defaultTextEncoding = Self.defaultTextEncoding
         appearanceMode = Self.defaultAppearanceMode
     }

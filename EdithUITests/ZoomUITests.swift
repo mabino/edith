@@ -390,4 +390,47 @@ final class ZoomUITests: XCTestCase {
         
         app.typeKey(.escape, modifierFlags: [])
     }
+    
+    // MARK: - Status Bar Tests
+    
+    func testStatusBarMenuItemExists() {
+        app.menuBars.menuBarItems["View"].click()
+        // Check for either "Show Status Bar" or "Hide Status Bar"
+        let showStatusBar = app.menuBars.menuItems["Show Status Bar"]
+        let hideStatusBar = app.menuBars.menuItems["Hide Status Bar"]
+        XCTAssertTrue(showStatusBar.exists || hideStatusBar.exists, "Status Bar toggle menu item should exist")
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testStatusBarToggleViaMenu() {
+        // Toggle status bar visibility via menu
+        app.menuBars.menuBarItems["View"].click()
+        
+        let hideStatusBar = app.menuBars.menuItems["Hide Status Bar"]
+        let showStatusBar = app.menuBars.menuItems["Show Status Bar"]
+        
+        if hideStatusBar.exists {
+            hideStatusBar.click()
+            sleep(1)
+            
+            // Verify it now says "Show"
+            app.menuBars.menuBarItems["View"].click()
+            XCTAssertTrue(app.menuBars.menuItems["Show Status Bar"].exists, "After hiding, menu should say 'Show Status Bar'")
+            
+            // Restore
+            app.menuBars.menuItems["Show Status Bar"].click()
+        } else if showStatusBar.exists {
+            showStatusBar.click()
+            sleep(1)
+            
+            // Verify it now says "Hide"
+            app.menuBars.menuBarItems["View"].click()
+            XCTAssertTrue(app.menuBars.menuItems["Hide Status Bar"].exists, "After showing, menu should say 'Hide Status Bar'")
+            
+            // Restore
+            app.menuBars.menuItems["Hide Status Bar"].click()
+        }
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
 }

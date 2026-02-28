@@ -135,6 +135,11 @@ struct ZoomCommands: Commands {
             }
             .keyboardShortcut("l", modifiers: [.command, .shift])
             
+            Button(settingsManager.showStatusBar ? "Hide Status Bar" : "Show Status Bar") {
+                settingsManager.showStatusBar.toggle()
+            }
+            .keyboardShortcut("/", modifiers: [.command, .shift])
+            
             Divider()
             
             Button("Zoom In") {
