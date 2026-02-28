@@ -44,6 +44,7 @@ struct TextDocument: FileDocument {
     var text: String
     var encoding: TextEncodingOption
     var lineEnding: LineEnding
+    var syntaxLanguage: SyntaxLanguage
     
     static var readableContentTypes: [UTType] { [.plainText] }
     
@@ -53,6 +54,7 @@ struct TextDocument: FileDocument {
         let encodingIndex = UserDefaults.standard.integer(forKey: "defaultTextEncoding")
         self.encoding = TextEncodingOption(rawValue: encodingIndex) ?? .utf8
         self.lineEnding = LineEnding.detect(in: text)
+        self.syntaxLanguage = .auto
     }
     
     init(configuration: ReadConfiguration) throws {
@@ -76,6 +78,9 @@ struct TextDocument: FileDocument {
         
         // Detect line ending from content
         lineEnding = LineEnding.detect(in: text)
+        
+        // Default to auto-detect for syntax (will be set from file URL in ContentView)
+        syntaxLanguage = .auto
     }
     
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {

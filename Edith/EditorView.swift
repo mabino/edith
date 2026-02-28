@@ -387,7 +387,7 @@ class InvisibleCharacterLayoutManager: NSLayoutManager {
         
         guard showInvisibleCharacters,
               let textStorage = textStorage,
-              let textContainer = textContainers.first else { return }
+              textContainers.first != nil else { return }
         
         let characterRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
         let string = textStorage.string as NSString
@@ -419,8 +419,7 @@ class InvisibleCharacterLayoutManager: NSLayoutManager {
             guard let glyphToDraw = glyph else { return }
             
             let glyphIndex = self.glyphIndexForCharacter(at: substringRange.location)
-            var lineFragmentRect = NSRect.zero
-            self.lineFragmentRect(forGlyphAt: glyphIndex, effectiveRange: nil, withoutAdditionalLayout: true)
+            _ = self.lineFragmentRect(forGlyphAt: glyphIndex, effectiveRange: nil, withoutAdditionalLayout: true)
             let glyphLocation = self.location(forGlyphAt: glyphIndex)
             let lineRect = self.lineFragmentRect(forGlyphAt: glyphIndex, effectiveRange: nil)
             

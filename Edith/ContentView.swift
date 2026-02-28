@@ -51,9 +51,11 @@ struct ContentView: View {
     // Per-document state (not persisted)
     @StateObject private var zoomState = DocumentZoomState()
     @StateObject private var fileWatcher = FileWatcher()
+    @StateObject private var syntaxHighlighter = SyntaxHighlighter()
     
     @State private var showFileChangedBanner = false
     @State private var cursorPosition = CursorPosition()
+    @State private var hasDetectedLanguage = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -75,7 +77,11 @@ struct ContentView: View {
             
             // Status Bar
             if settingsManager.showStatusBar {
-                StatusBar(document: $document, cursorPosition: $cursorPosition)
+                StatusBar(
+                    document: $document,
+                    cursorPosition: $cursorPosition,
+                    detectedLanguage: syntaxHighlighter.detectedLanguage
+                )
             }
         }
         .focusedSceneValue(\.documentZoomState, zoomState)
@@ -90,10 +96,29 @@ struct ContentView: View {
         .onAppear {
             startWatchingFile()
             registerWithTracker()
+            detectLanguageFromFile()
         }
         .onDisappear {
             fileWatcher.stopWatching()
             unregisterFromTracker()
+        }
+    }
+    
+    private func detectLanguageFromFile() {
+        guard !hasDetectedLanguage else { return }
+        
+        // Delay to ensure window is set up
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if let fileURL = getDocumentFileURL() {
+                // Only auto-detect if user hasn't manually selected a language
+                if document.syntaxLanguage == .auto {
+                    let detected = SyntaxLanguage.detect(from: fileURL)
+                    if detected != .auto {
+                        document.syntaxLanguage = detected
+                    }
+                }
+            }
+            hasDetectedLanguage = true
         }
     }
     
