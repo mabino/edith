@@ -62,6 +62,24 @@ enum SyntaxLanguage: String, CaseIterable, Identifiable, Codable {
         }
     }
     
+    /// Default file extension for this language
+    var defaultExtension: String {
+        switch self {
+        case .auto, .plain: return "txt"
+        case .html: return "html"
+        case .css: return "css"
+        case .python: return "py"
+        case .json: return "json"
+        case .markdown: return "md"
+        case .javascript: return "js"
+        case .swift: return "swift"
+        case .xml: return "xml"
+        case .yaml: return "yml"
+        case .sql: return "sql"
+        case .shell: return "sh"
+        }
+    }
+    
     /// Detect language from file extension
     static func detect(from url: URL?) -> SyntaxLanguage {
         guard let ext = url?.pathExtension.lowercased() else { return .auto }

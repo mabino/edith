@@ -46,6 +46,24 @@ final class SyntaxHighlighterTests: XCTestCase {
         XCTAssertEqual(SyntaxLanguage.shell.highlightLanguage, "bash")
     }
     
+    // MARK: - Default Extension Tests
+    
+    func testDefaultExtensions() {
+        XCTAssertEqual(SyntaxLanguage.auto.defaultExtension, "txt")
+        XCTAssertEqual(SyntaxLanguage.plain.defaultExtension, "txt")
+        XCTAssertEqual(SyntaxLanguage.html.defaultExtension, "html")
+        XCTAssertEqual(SyntaxLanguage.css.defaultExtension, "css")
+        XCTAssertEqual(SyntaxLanguage.python.defaultExtension, "py")
+        XCTAssertEqual(SyntaxLanguage.json.defaultExtension, "json")
+        XCTAssertEqual(SyntaxLanguage.markdown.defaultExtension, "md")
+        XCTAssertEqual(SyntaxLanguage.javascript.defaultExtension, "js")
+        XCTAssertEqual(SyntaxLanguage.swift.defaultExtension, "swift")
+        XCTAssertEqual(SyntaxLanguage.xml.defaultExtension, "xml")
+        XCTAssertEqual(SyntaxLanguage.yaml.defaultExtension, "yml")
+        XCTAssertEqual(SyntaxLanguage.sql.defaultExtension, "sql")
+        XCTAssertEqual(SyntaxLanguage.shell.defaultExtension, "sh")
+    }
+    
     // MARK: - File Extension Detection Tests
     
     func testDetectHTMLFromExtension() {

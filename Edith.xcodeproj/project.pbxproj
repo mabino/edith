@@ -62,6 +62,7 @@
 		109 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		110 /* SyntaxLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxLanguage.swift; sourceTree = "<group>"; };
 		111 /* SyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighter.swift; sourceTree = "<group>"; };
+		112 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		201 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		301 /* Edith.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Edith.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401 /* Edith.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Edith.entitlements; sourceTree = "<group>"; };
@@ -116,6 +117,7 @@
 				109 /* StatusBar.swift */,
 				110 /* SyntaxLanguage.swift */,
 				111 /* SyntaxHighlighter.swift */,
+				112 /* Info.plist */,
 				201 /* Assets.xcassets */,
 				401 /* Edith.entitlements */,
 			);
@@ -477,6 +479,7 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Edith/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Edith;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -504,6 +507,7 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Edith/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Edith;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
