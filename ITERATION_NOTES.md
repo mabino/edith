@@ -2,7 +2,7 @@
 
 ## Current State: v1.3 Session Restore & General Settings ✓
 
-Build and tests verified.
+Build and all tests verified.
 
 ## What's Done
 - File > New Text Document (⌘N)
@@ -16,21 +16,23 @@ Build and tests verified.
 - Custom invisible character rendering (·↵△° etc.)
 - File change detection with reload/ignore banner
 - Help window (⌘?)
-- Session restore on launch (re-opens previously open documents)
-- 159 unit tests + 26 UI tests
+- Session restore on launch (re-opens previously open **saved** documents)
+- 159 unit tests + 31 UI tests
+
+## Session Restore Notes
+- Only documents with a saved file path are restored (not untitled documents)
+- Data is stored in the sandboxed container:
+  `~/Library/Containers/com.edith.texteditor/Data/Library/Application Support/Edith/Restore/`
+- Uses applicationShouldTerminate + applicationWillTerminate + NotificationCenter as fallbacks
 
 ## Tests
 Run `./scripts/test.sh` to verify all functionality.
-UI tests cover zoom menu states and keyboard shortcuts.
-
-## Recent Changes
-- Fixed session restore by reading UserDefaults directly in AppDelegate
-- Added SessionRestoreTests with 13 tests
+UI tests cover zoom menu states, keyboard shortcuts, and session restore.
 
 ## Next Steps
-1. Verify session restore works end-to-end (manual test)
-2. Add Help content for new features
-3. Consider adding unsaved content backup restoration
+1. Test session restore manually with a saved document
+2. Consider adding unsaved content backup restoration
+3. Improve invisible character styling
 
 ## Tech Stack
 - SwiftUI + NSTextView wrapper, @AppStorage, DocumentGroup
