@@ -1,8 +1,8 @@
 # Edith - Iteration Notes
 
-## Current State: v1.3 Session Restore & General Settings ✓
+## Current State: v1.4 Session Restore Working ✓
 
-Build and all tests verified.
+Build and all tests verified. Session restore now works correctly.
 
 ## What's Done
 - File > New Text Document (⌘N)
@@ -19,20 +19,19 @@ Build and all tests verified.
 - Session restore on launch (re-opens previously open **saved** documents)
 - 159 unit tests + 31 UI tests
 
-## Session Restore Notes
-- Only documents with a saved file path are restored (not untitled documents)
+## Session Restore Implementation
+- SwiftUI's DocumentGroup doesn't use NSDocumentController, so we track documents manually
+- OpenDocumentsTracker singleton maintains a Set<URL> of open documents
+- ContentView registers/unregisters with tracker on onAppear/onDisappear
 - Data is stored in the sandboxed container:
   `~/Library/Containers/com.edith.texteditor/Data/Library/Application Support/Edith/Restore/`
-- Uses applicationShouldTerminate + applicationWillTerminate + NotificationCenter as fallbacks
 
 ## Tests
 Run `./scripts/test.sh` to verify all functionality.
-UI tests cover zoom menu states, keyboard shortcuts, and session restore.
 
 ## Next Steps
-1. Test session restore manually with a saved document
-2. Consider adding unsaved content backup restoration
-3. Improve invisible character styling
+1. Consider adding unsaved content backup restoration
+2. Improve invisible character styling
 
 ## Tech Stack
 - SwiftUI + NSTextView wrapper, @AppStorage, DocumentGroup
