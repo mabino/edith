@@ -1,6 +1,6 @@
 # Edith - Iteration Notes
 
-## Current State: v1.5 Status Bar ✓
+## Current State: v1.6 File Watcher Fixed ✓
 
 Build and all tests verified.
 
@@ -16,6 +16,9 @@ Build and all tests verified.
 - Format > Font > Bigger (⇧⌘+), Smaller (⌥⌘-)
 - Custom invisible character rendering (·↵△° etc.)
 - File change detection with reload/ignore banner
+  - Detects external changes (e.g., vim edits)
+  - Suppresses alerts for Edith's own saves
+  - Re-establishes watch after each change (handles vim's delete+rename)
 - Help window (⌘?)
 - Session restore on launch (re-opens previously open **saved** documents)
 - **Status Bar** with:
@@ -23,14 +26,10 @@ Build and all tests verified.
   - Character, word, and line count
   - Text encoding pop-up (UTF-8, UTF-16, ASCII, etc.)
   - Line ending pop-up (LF, CR, CRLF)
-- 178 unit tests + 33 UI tests
+- 187 unit tests + 33 UI tests
 
 ## Tests
 Run `./scripts/test.sh` to verify all functionality.
-
-## Next Steps
-1. Consider adding unsaved content backup restoration
-2. Improve invisible character styling
 
 ## Tech Stack
 - SwiftUI + NSTextView wrapper, @AppStorage, DocumentGroup
