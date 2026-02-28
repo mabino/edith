@@ -48,6 +48,7 @@ final class MenuStructureTests: XCTestCase {
         XCTAssertTrue(menuTitles.contains("File"), "Should have File menu")
         XCTAssertTrue(menuTitles.contains("Edit"), "Should have Edit menu")
         XCTAssertTrue(menuTitles.contains("View"), "Should have View menu")
+        XCTAssertTrue(menuTitles.contains("Format"), "Should have Format menu")
         XCTAssertTrue(menuTitles.contains("Window"), "Should have Window menu")
         XCTAssertTrue(menuTitles.contains("Help"), "Should have Help menu")
     }
@@ -95,5 +96,51 @@ final class MenuStructureTests: XCTestCase {
         let fileMenuItemTitles = fileMenu.items.map { $0.title }
         XCTAssertTrue(fileMenuItemTitles.contains("New Text Document"),
             "File menu should contain 'New Text Document'. Found: \(fileMenuItemTitles)")
+    }
+    
+    func testViewMenuContainsZoomOptions() {
+        guard let mainMenu = NSApp.mainMenu else {
+            XCTFail("Application should have a main menu")
+            return
+        }
+        
+        guard let viewMenu = mainMenu.items.first(where: { $0.title == "View" })?.submenu else {
+            XCTFail("Should have View menu")
+            return
+        }
+        
+        let viewMenuItemTitles = viewMenu.items.map { $0.title }
+        XCTAssertTrue(viewMenuItemTitles.contains("Zoom In"),
+            "View menu should contain 'Zoom In'. Found: \(viewMenuItemTitles)")
+        XCTAssertTrue(viewMenuItemTitles.contains("Zoom Out"),
+            "View menu should contain 'Zoom Out'. Found: \(viewMenuItemTitles)")
+        XCTAssertTrue(viewMenuItemTitles.contains("Actual Size"),
+            "View menu should contain 'Actual Size'. Found: \(viewMenuItemTitles)")
+    }
+    
+    func testFormatMenuExists() {
+        guard let mainMenu = NSApp.mainMenu else {
+            XCTFail("Application should have a main menu")
+            return
+        }
+        
+        let menuTitles = mainMenu.items.compactMap { $0.title as String? }
+        XCTAssertTrue(menuTitles.contains("Format"), "Should have Format menu")
+    }
+    
+    func testFormatMenuContainsFontSubmenu() {
+        guard let mainMenu = NSApp.mainMenu else {
+            XCTFail("Application should have a main menu")
+            return
+        }
+        
+        guard let formatMenu = mainMenu.items.first(where: { $0.title == "Format" })?.submenu else {
+            XCTFail("Should have Format menu")
+            return
+        }
+        
+        let formatMenuItemTitles = formatMenu.items.map { $0.title }
+        XCTAssertTrue(formatMenuItemTitles.contains("Font"),
+            "Format menu should contain 'Font' submenu. Found: \(formatMenuItemTitles)")
     }
 }
