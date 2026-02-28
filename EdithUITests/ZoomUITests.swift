@@ -138,6 +138,137 @@ final class ZoomUITests: XCTestCase {
         actualSize.click()
     }
     
+    // MARK: - Zoom Bounds Disabled State Tests
+    
+    func testZoomInDisabledAtMaximum() {
+        // Zoom in repeatedly to reach maximum
+        for _ in 0..<10 {
+            app.menuBars.menuBarItems["View"].click()
+            let zoomIn = app.menuBars.menuItems["Zoom In"]
+            if zoomIn.isEnabled {
+                zoomIn.click()
+                sleep(1)
+            } else {
+                break
+            }
+        }
+        
+        // Check Zoom In is now disabled
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let zoomIn = app.menuBars.menuItems["Zoom In"]
+        XCTAssertFalse(zoomIn.isEnabled, "Zoom In should be DISABLED at maximum zoom (4.0)")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testZoomOutDisabledAtMinimum() {
+        // Zoom out repeatedly to reach minimum
+        for _ in 0..<10 {
+            app.menuBars.menuBarItems["View"].click()
+            let zoomOut = app.menuBars.menuItems["Zoom Out"]
+            if zoomOut.isEnabled {
+                zoomOut.click()
+                sleep(1)
+            } else {
+                break
+            }
+        }
+        
+        // Check Zoom Out is now disabled
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let zoomOut = app.menuBars.menuItems["Zoom Out"]
+        XCTAssertFalse(zoomOut.isEnabled, "Zoom Out should be DISABLED at minimum zoom (0.25)")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testZoomOutStillEnabledAfterZoomIn() {
+        // Zoom in
+        app.menuBars.menuBarItems["View"].click()
+        app.menuBars.menuItems["Zoom In"].click()
+        sleep(1)
+        
+        // Check Zoom Out is still enabled
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let zoomOut = app.menuBars.menuItems["Zoom Out"]
+        XCTAssertTrue(zoomOut.isEnabled, "Zoom Out should remain enabled after zooming in")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testZoomInStillEnabledAfterZoomOut() {
+        // Zoom out
+        app.menuBars.menuBarItems["View"].click()
+        app.menuBars.menuItems["Zoom Out"].click()
+        sleep(1)
+        
+        // Check Zoom In is still enabled
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let zoomIn = app.menuBars.menuItems["Zoom In"]
+        XCTAssertTrue(zoomIn.isEnabled, "Zoom In should remain enabled after zooming out")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    // MARK: - Keyboard Shortcut Verification Tests
+    
+    func testZoomInKeyboardShortcutChangesState() {
+        // Use keyboard shortcut to zoom in
+        app.typeKey("=", modifierFlags: .command)
+        sleep(1)
+        
+        // Verify Actual Size is now enabled (indicating zoom changed)
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let actualSize = app.menuBars.menuItems["Actual Size"]
+        XCTAssertTrue(actualSize.isEnabled, "Actual Size should be enabled after ⌘= shortcut")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testZoomOutKeyboardShortcutChangesState() {
+        // Use keyboard shortcut to zoom out
+        app.typeKey("-", modifierFlags: .command)
+        sleep(1)
+        
+        // Verify Actual Size is now enabled (indicating zoom changed)
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let actualSize = app.menuBars.menuItems["Actual Size"]
+        XCTAssertTrue(actualSize.isEnabled, "Actual Size should be enabled after ⌘- shortcut")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
+    func testActualSizeKeyboardShortcutResetsState() {
+        // First zoom in
+        app.typeKey("=", modifierFlags: .command)
+        sleep(1)
+        
+        // Then reset with ⌘0
+        app.typeKey("0", modifierFlags: .command)
+        sleep(1)
+        
+        // Verify Actual Size is now disabled (indicating zoom reset to 1.0)
+        app.menuBars.menuBarItems["View"].click()
+        sleep(1)
+        
+        let actualSize = app.menuBars.menuItems["Actual Size"]
+        XCTAssertFalse(actualSize.isEnabled, "Actual Size should be disabled after ⌘0 shortcut resets zoom")
+        
+        app.typeKey(.escape, modifierFlags: [])
+    }
+    
     // MARK: - Debug Helper Tests
     
     func testActualSizeDisabledAtDefaultZoom() {

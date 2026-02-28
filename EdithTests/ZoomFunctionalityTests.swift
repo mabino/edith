@@ -296,4 +296,64 @@ final class ZoomFunctionalityTests: XCTestCase {
         let shouldBeDisabled = state.zoom <= 0.25
         XCTAssertTrue(shouldBeDisabled, "Zoom Out should be disabled at minimum zoom")
     }
+    
+    // MARK: - SettingsManager activeDocumentZoom Tests
+    
+    func testActiveDocumentZoomDefaultValue() {
+        let settings = SettingsManager()
+        XCTAssertEqual(settings.activeDocumentZoom, 1.0, "activeDocumentZoom should default to 1.0")
+    }
+    
+    func testActiveDocumentZoomCanBeUpdated() {
+        let settings = SettingsManager()
+        settings.activeDocumentZoom = 2.0
+        XCTAssertEqual(settings.activeDocumentZoom, 2.0, "activeDocumentZoom should be updatable")
+    }
+    
+    func testActiveDocumentZoomIsNotPersisted() {
+        let settings1 = SettingsManager()
+        settings1.activeDocumentZoom = 3.0
+        
+        // Creating a new instance should have default value since it's not persisted
+        let settings2 = SettingsManager()
+        XCTAssertEqual(settings2.activeDocumentZoom, 1.0, 
+            "activeDocumentZoom should not persist - new instance should be 1.0")
+    }
+    
+    // MARK: - DocumentZoomState Font Size Tests
+    
+    func testDocumentZoomStateIncreaseFontSize() {
+        let state = DocumentZoomState()
+        XCTAssertEqual(state.fontSizeOffset, 0.0)
+        state.increaseFontSize()
+        XCTAssertEqual(state.fontSizeOffset, 1.0, "increaseFontSize() should add 1.0")
+    }
+    
+    func testDocumentZoomStateDecreaseFontSize() {
+        let state = DocumentZoomState()
+        state.decreaseFontSize(minOffset: -7.0)
+        XCTAssertEqual(state.fontSizeOffset, -1.0, "decreaseFontSize() should subtract 1.0")
+    }
+    
+    func testDocumentZoomStateFontSizeMinimum() {
+        let state = DocumentZoomState()
+        // With base 13 and min 6, minOffset = -7
+        for _ in 0..<20 {
+            state.decreaseFontSize(minOffset: -7.0)
+        }
+        XCTAssertEqual(state.fontSizeOffset, -7.0, "Font size offset should floor at minOffset")
+    }
+    
+    func testDocumentZoomStateDefaultFontSizeOffset() {
+        let state = DocumentZoomState()
+        XCTAssertEqual(state.fontSizeOffset, 0.0, "Default font size offset should be 0.0")
+    }
+    
+    func testDocumentZoomStateFontSizeCanIncrease() {
+        let state = DocumentZoomState()
+        for _ in 0..<10 {
+            state.increaseFontSize()
+        }
+        XCTAssertEqual(state.fontSizeOffset, 10.0, "Font size offset should be able to increase without limit")
+    }
 }
