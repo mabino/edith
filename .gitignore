@@ -36,3 +36,29 @@ Carthage/Build/
 # Archives
 *.xcarchive
 *.ipa
+
+# LLM/AI support files
+.claude/
+.copilot/
+.cursor/
+.aider*
+.continue/
+*.prompt
+*.prompts
+CLAUDE.md
+COPILOT.md
+
+# Secrets and credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.mobileprovision
+secrets/
+credentials/
+*.secret
+
+# Logs
+*.log
+logs/
