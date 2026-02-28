@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UniformTypeIdentifiers
 
 /// Supported syntax languages for highlighting
 enum SyntaxLanguage: String, CaseIterable, Identifiable, Codable {
@@ -80,9 +81,54 @@ enum SyntaxLanguage: String, CaseIterable, Identifiable, Codable {
         }
     }
     
+    /// Detect language from UTType and optional filename
+    static func detect(from contentType: UTType, filename: String?) -> SyntaxLanguage {
+        // First try to detect from filename extension
+        if let filename = filename {
+            let ext = (filename as NSString).pathExtension.lowercased()
+            if !ext.isEmpty {
+                let detected = detect(from: URL(fileURLWithPath: filename))
+                if detected != .plain && detected != .auto {
+                    return detected
+                }
+            }
+        }
+        
+        // Fall back to content type detection
+        if contentType.conforms(to: .html) {
+            return .html
+        } else if contentType.conforms(to: .json) {
+            return .json
+        } else if contentType.conforms(to: .xml) || contentType.conforms(to: .propertyList) {
+            return .xml
+        } else if contentType.conforms(to: .yaml) {
+            return .yaml
+        } else if contentType.conforms(to: .shellScript) {
+            return .shell
+        } else if contentType.conforms(to: .pythonScript) {
+            return .python
+        } else if contentType.conforms(to: .swiftSource) {
+            return .swift
+        } else if contentType.identifier.contains("css") {
+            return .css
+        } else if contentType.identifier.contains("markdown") {
+            return .markdown
+        } else if contentType.identifier.contains("javascript") {
+            return .javascript
+        } else if contentType.identifier.contains("sql") {
+            return .sql
+        } else if contentType.conforms(to: .sourceCode) {
+            // For generic source code, use auto-detect
+            return .auto
+        }
+        
+        // For plain text and unknown, no highlighting
+        return .plain
+    }
+    
     /// Detect language from file extension
     static func detect(from url: URL?) -> SyntaxLanguage {
-        guard let ext = url?.pathExtension.lowercased() else { return .auto }
+        guard let ext = url?.pathExtension.lowercased() else { return .plain }
         
         switch ext {
         case "html", "htm":
@@ -107,10 +153,12 @@ enum SyntaxLanguage: String, CaseIterable, Identifiable, Codable {
             return .sql
         case "sh", "bash", "zsh", "fish":
             return .shell
-        case "txt", "text":
+        case "txt", "text", "log", "cfg", "conf", "ini":
             return .plain
         default:
-            return .auto
+            // For unknown extensions, default to plain text (no highlighting)
+            // rather than auto-detect which may incorrectly highlight
+            return .plain
         }
     }
     

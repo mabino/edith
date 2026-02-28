@@ -101,8 +101,8 @@ struct TextDocument: FileDocument {
         // Detect line ending from content
         lineEnding = LineEnding.detect(in: text)
         
-        // Default to auto-detect for syntax (will be set from file URL in ContentView)
-        syntaxLanguage = .auto
+        // Detect syntax from content type or filename
+        syntaxLanguage = SyntaxLanguage.detect(from: configuration.contentType, filename: configuration.file.preferredFilename)
     }
     
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {

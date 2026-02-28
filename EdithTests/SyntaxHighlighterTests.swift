@@ -126,13 +126,14 @@ final class SyntaxHighlighterTests: XCTestCase {
         XCTAssertEqual(SyntaxLanguage.detect(from: URL(fileURLWithPath: "/test/notes.text")), .plain)
     }
     
-    func testDetectAutoForUnknownExtension() {
-        XCTAssertEqual(SyntaxLanguage.detect(from: URL(fileURLWithPath: "/test/file.xyz")), .auto)
-        XCTAssertEqual(SyntaxLanguage.detect(from: URL(fileURLWithPath: "/test/file.unknown")), .auto)
+    func testDetectPlainForUnknownExtension() {
+        // Unknown extensions default to plain text (no highlighting)
+        XCTAssertEqual(SyntaxLanguage.detect(from: URL(fileURLWithPath: "/test/file.xyz")), .plain)
+        XCTAssertEqual(SyntaxLanguage.detect(from: URL(fileURLWithPath: "/test/file.unknown")), .plain)
     }
     
-    func testDetectAutoForNilURL() {
-        XCTAssertEqual(SyntaxLanguage.detect(from: nil), .auto)
+    func testDetectPlainForNilURL() {
+        XCTAssertEqual(SyntaxLanguage.detect(from: nil), .plain)
     }
     
     // MARK: - Core Languages Tests
