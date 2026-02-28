@@ -11,11 +11,22 @@ import SwiftUI
 class EdithAppDelegate: NSObject, NSApplicationDelegate {
     var settingsManager: SettingsManager?
     
+    // Read setting directly from UserDefaults (same source as SettingsManager)
+    private var reopenDocumentsOnLaunch: Bool {
+        // Default to true if not set
+        if UserDefaults.standard.object(forKey: "reopenDocumentsOnLaunch") == nil {
+            return true
+        }
+        return UserDefaults.standard.bool(forKey: "reopenDocumentsOnLaunch")
+    }
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
-        guard let settings = settingsManager, settings.reopenDocumentsOnLaunch else { return }
+        guard reopenDocumentsOnLaunch else { return }
         
         // Restore documents from last session
         let openDocs = DocumentRestoreManager.shared.loadOpenDocuments()
+        
+        guard !openDocs.isEmpty else { return }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             for docInfo in openDocs {
@@ -32,7 +43,7 @@ class EdithAppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationWillTerminate(_ notification: Notification) {
-        guard let settings = settingsManager, settings.reopenDocumentsOnLaunch else {
+        guard reopenDocumentsOnLaunch else {
             DocumentRestoreManager.shared.clearOpenDocuments()
             return
         }
