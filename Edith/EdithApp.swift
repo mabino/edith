@@ -7,10 +7,62 @@
 
 import SwiftUI
 
+// Helper view to observe zoom state and provide reactive menu items
+struct ZoomCommands: Commands {
+    @FocusedValue(\.documentZoomState) var zoomState
+    @ObservedObject var settingsManager: SettingsManager
+    
+    var body: some Commands {
+        CommandGroup(after: .toolbar) {
+            Divider()
+            Button(settingsManager.showLineNumbers ? "Hide Line Numbers" : "Show Line Numbers") {
+                settingsManager.showLineNumbers.toggle()
+            }
+            .keyboardShortcut("l", modifiers: [.command, .shift])
+            
+            Divider()
+            
+            Button("Zoom In") {
+                zoomState?.zoomIn()
+            }
+            .keyboardShortcut("=", modifiers: .command)
+            .disabled(zoomState == nil)
+            
+            Button("Zoom Out") {
+                zoomState?.zoomOut()
+            }
+            .keyboardShortcut("-", modifiers: .command)
+            .disabled(zoomState == nil)
+            
+            Button("Actual Size") {
+                zoomState?.resetZoom()
+            }
+            .keyboardShortcut("0", modifiers: .command)
+            .disabled(zoomState == nil)
+        }
+        
+        // Format > Font menu for font size adjustments
+        CommandMenu("Format") {
+            Menu("Font") {
+                Button("Bigger") {
+                    zoomState?.increaseFontSize()
+                }
+                .keyboardShortcut("+", modifiers: [.command, .shift])
+                .disabled(zoomState == nil)
+                
+                Button("Smaller") {
+                    zoomState?.decreaseFontSize(minOffset: -settingsManager.fontSize + 6)
+                }
+                .keyboardShortcut("-", modifiers: [.command, .option])
+                .disabled(zoomState == nil)
+            }
+        }
+    }
+}
+
 @main
 struct EdithApp: App {
     @StateObject private var settingsManager = SettingsManager()
-    @FocusedValue(\.documentZoomState) var zoomState
     
     var body: some Scene {
         DocumentGroup(newDocument: TextDocument()) { file in
@@ -25,50 +77,7 @@ struct EdithApp: App {
                 .keyboardShortcut("n", modifiers: .command)
             }
             
-            CommandGroup(after: .toolbar) {
-                Divider()
-                Button(settingsManager.showLineNumbers ? "Hide Line Numbers" : "Show Line Numbers") {
-                    settingsManager.showLineNumbers.toggle()
-                }
-                .keyboardShortcut("l", modifiers: [.command, .shift])
-                
-                Divider()
-                
-                Button("Zoom In") {
-                    zoomState?.zoomIn()
-                }
-                .keyboardShortcut("+", modifiers: [.command, .option])
-                .disabled(zoomState == nil)
-                
-                Button("Zoom Out") {
-                    zoomState?.zoomOut()
-                }
-                .keyboardShortcut("-", modifiers: [.command, .option])
-                .disabled(zoomState == nil)
-                
-                Button("Actual Size") {
-                    zoomState?.resetZoom()
-                }
-                .keyboardShortcut("1", modifiers: [.command, .option])
-                .disabled(zoomState == nil)
-            }
-            
-            // Format > Font menu for font size adjustments
-            CommandMenu("Format") {
-                Menu("Font") {
-                    Button("Bigger") {
-                        zoomState?.increaseFontSize()
-                    }
-                    .keyboardShortcut("+", modifiers: .command)
-                    .disabled(zoomState == nil)
-                    
-                    Button("Smaller") {
-                        zoomState?.decreaseFontSize(minOffset: -settingsManager.fontSize + 6)
-                    }
-                    .keyboardShortcut("-", modifiers: .command)
-                    .disabled(zoomState == nil)
-                }
-            }
+            ZoomCommands(settingsManager: settingsManager)
         }
         
         Settings {
