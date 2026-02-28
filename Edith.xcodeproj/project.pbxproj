@@ -15,6 +15,7 @@
 		006 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106; };
 		007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 201; };
 		T01 /* LineNumberGutterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T10; };
+		T03 /* TextEncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T12; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		401 /* Edith.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Edith.entitlements; sourceTree = "<group>"; };
 		T10 /* LineNumberGutterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineNumberGutterTests.swift; sourceTree = "<group>"; };
 		T11 /* EdithTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EdithTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		T12 /* TextEncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEncodingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				T10 /* LineNumberGutterTests.swift */,
+				T12 /* TextEncodingTests.swift */,
 			);
 			path = EdithTests;
 			sourceTree = "<group>";
@@ -194,6 +197,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				T01 /* LineNumberGutterTests.swift in Sources */,
+				T03 /* TextEncodingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
