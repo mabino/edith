@@ -217,11 +217,24 @@ class LineNumberView: NSView {
     // Use flipped coordinates to match NSTextView
     override var isFlipped: Bool { true }
     
+    // Gutter background color: light gray in light mode, dark complement in dark mode
+    private static let gutterBackgroundColor: NSColor = {
+        NSColor(name: nil) { appearance in
+            if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
+                // Dark mode: RGB 40,40,40
+                return NSColor(red: 40/255, green: 40/255, blue: 40/255, alpha: 1.0)
+            } else {
+                // Light mode: RGB 235,235,235
+                return NSColor(red: 235/255, green: 235/255, blue: 235/255, alpha: 1.0)
+            }
+        }
+    }()
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         
         // Background
-        NSColor.controlBackgroundColor.setFill()
+        Self.gutterBackgroundColor.setFill()
         bounds.fill()
         
         // Separator
