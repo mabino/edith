@@ -178,20 +178,28 @@ class LineNumberView: NSView {
         }
     }
     
-    // Calculate width based on actual line number font to prevent truncation
+    // Fixed minimum width based on 3 digits at base font size (13pt)
+    private static let minimumWidth: CGFloat = {
+        let baseFont = NSFont.monospacedDigitSystemFont(ofSize: 13 * 0.85, weight: .regular)
+        let sample = "888"
+        let attrs: [NSAttributedString.Key: Any] = [.font: baseFont]
+        return sample.size(withAttributes: attrs).width + 16
+    }()
+    
+    // Calculate width: fixed minimum, expands only when font/magnification requires more
     var requiredWidth: CGFloat {
-        guard let textView = textView else { return 40 }
+        guard let textView = textView else { return Self.minimumWidth }
         let lineCount = max(1, textView.string.components(separatedBy: "\n").count)
         let digits = max(3, String(lineCount).count)
         
         // Use the same font as drawing (font.pointSize * 0.85)
         let lineNumberFont = NSFont.monospacedDigitSystemFont(ofSize: font.pointSize * 0.85, weight: .regular)
-        let sampleNumber = String(repeating: "8", count: digits) // "8" is typically widest digit
+        let sampleNumber = String(repeating: "8", count: digits)
         let attrs: [NSAttributedString.Key: Any] = [.font: lineNumberFont]
-        let textWidth = sampleNumber.size(withAttributes: attrs).width
+        let textWidth = sampleNumber.size(withAttributes: attrs).width + 16
         
-        // Add padding: 8pt left + 8pt right
-        return textWidth + 16
+        // Return the larger of minimum fixed width or actual required width
+        return max(Self.minimumWidth, textWidth)
     }
     
     // Use flipped coordinates to match NSTextView

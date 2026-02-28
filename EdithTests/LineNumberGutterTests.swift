@@ -340,79 +340,83 @@ final class LineNumberVisualRegressionTests: XCTestCase {
         XCTAssertEqual(scrollView.textView.textColor, NSColor.textColor, "Text area should use textColor")
     }
     
-    // MARK: - Gutter Width Responsiveness Tests
+    // MARK: - Gutter Width Behavior Tests
     
-    func testGutterWidthIncreasesWithFontSize() {
+    func testGutterWidthHasFixedMinimum() {
         let scrollView = LineNumberScrollView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
         let lineNumberView = scrollView.lineNumberView
         
-        // Get width with small font
+        // At default font size, width should be the fixed minimum
         lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
-        let widthAt13pt = lineNumberView.requiredWidth
+        let defaultWidth = lineNumberView.requiredWidth
         
-        // Change to larger font - width should increase to prevent truncation
-        lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 26, weight: .regular)
-        let widthAt26pt = lineNumberView.requiredWidth
+        // At smaller font size, width should still be the fixed minimum
+        lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 10, weight: .regular)
+        let smallerFontWidth = lineNumberView.requiredWidth
         
-        XCTAssertGreaterThan(widthAt26pt, widthAt13pt, "Gutter width should increase with font size to prevent truncation")
+        XCTAssertEqual(defaultWidth, smallerFontWidth, "Gutter should maintain fixed minimum width at smaller font sizes")
     }
     
-    func testGutterWidthRespondsToMagnification() {
+    func testGutterWidthExpandsWhenFontRequiresMore() {
         let scrollView = LineNumberScrollView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
         let lineNumberView = scrollView.lineNumberView
         
-        // Get initial width
+        // Get minimum width at base font
         lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
-        let initialWidth = lineNumberView.requiredWidth
+        let minimumWidth = lineNumberView.requiredWidth
         
-        // Simulate magnification by changing font (as EditorView does)
+        // At larger font size, width should expand to accommodate
+        lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 26, weight: .regular)
+        let largerFontWidth = lineNumberView.requiredWidth
+        
+        XCTAssertGreaterThan(largerFontWidth, minimumWidth, "Gutter should expand when larger font requires more space")
+    }
+    
+    func testGutterWidthExpandsForMagnification() {
+        let scrollView = LineNumberScrollView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
+        let lineNumberView = scrollView.lineNumberView
+        
+        // Get minimum width
+        lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
+        let minimumWidth = lineNumberView.requiredWidth
+        
+        // Simulate 2x magnification
         lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 13 * 2.0, weight: .regular)
         let zoomedWidth = lineNumberView.requiredWidth
         
-        XCTAssertGreaterThan(zoomedWidth, initialWidth, "Gutter width should respond to magnification to prevent truncation")
+        XCTAssertGreaterThan(zoomedWidth, minimumWidth, "Gutter should expand when magnification requires more space")
     }
     
-    func testGutterWidthIncreasesWithLineCount() {
+    func testGutterWidthExpandsForHighLineCount() {
         let scrollView = LineNumberScrollView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
         let lineNumberView = scrollView.lineNumberView
         let textView = scrollView.textView
         
-        // Width with few lines
+        // Width with few lines (3 digits minimum)
         textView.string = "Line 1\nLine 2\nLine 3"
         let width3Lines = lineNumberView.requiredWidth
         
-        // Width with many lines (5 digits)
+        // Width with many lines (5 digits needed)
         textView.string = (1...10000).map { "Line \($0)" }.joined(separator: "\n")
         let width10000Lines = lineNumberView.requiredWidth
         
-        XCTAssertGreaterThan(width10000Lines, width3Lines, "Gutter width should increase for more line number digits")
+        XCTAssertGreaterThan(width10000Lines, width3Lines, "Gutter should expand for more line number digits")
     }
     
-    func testGutterWidthScalesProportionally() {
+    func testGutterWidthNeverShrinksBelowMinimum() {
         let scrollView = LineNumberScrollView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
         let lineNumberView = scrollView.lineNumberView
         
+        // Get the minimum width at base size
         lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
-        let width13 = lineNumberView.requiredWidth
+        let minimumWidth = lineNumberView.requiredWidth
         
-        lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 26, weight: .regular)
-        let width26 = lineNumberView.requiredWidth
-        
-        // Width should roughly double (within some tolerance for padding)
-        let ratio = width26 / width13
-        XCTAssertGreaterThan(ratio, 1.5, "Gutter width should scale proportionally with font size")
-        XCTAssertLessThan(ratio, 2.5, "Gutter width scaling should be reasonable")
-    }
-    
-    func testGutterWidthHasMinimumPadding() {
-        let scrollView = LineNumberScrollView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
-        let lineNumberView = scrollView.lineNumberView
-        
-        lineNumberView.font = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
-        let width = lineNumberView.requiredWidth
-        
-        // Should have at least 16pt padding (8 left + 8 right)
-        XCTAssertGreaterThanOrEqual(width, 16, "Gutter should have minimum padding")
+        // Try various smaller font sizes - width should never go below minimum
+        for size in [8.0, 9.0, 10.0, 11.0, 12.0] {
+            lineNumberView.font = NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
+            XCTAssertGreaterThanOrEqual(lineNumberView.requiredWidth, minimumWidth, 
+                "Gutter should never shrink below fixed minimum at \(size)pt")
+        }
     }
 }
 
