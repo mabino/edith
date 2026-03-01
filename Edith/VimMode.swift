@@ -30,6 +30,10 @@ class VimModeState: ObservableObject {
     // Number prefix for commands (e.g., 5j, 10G)
     private var numberPrefix: String = ""
     
+    // Operator pending mode (e.g., after pressing 'd')
+    private var pendingOperator: String = ""
+    private var operatorCount: Int = 1
+    
     // Reference to text view for executing commands
     weak var textView: NSTextView?
     
@@ -88,61 +92,57 @@ class VimModeState: ObservableObject {
         guard mode == .normal, let textView = textView else { return false }
         
         // Handle digit keys for number prefix (except 0 at start which is line start)
+        // Also handle digits after pending operator (e.g., d3w)
         if key >= "1" && key <= "9" || (key == "0" && !numberPrefix.isEmpty) {
             numberPrefix += key
-            statusMessage = numberPrefix
+            statusMessage = pendingOperator + numberPrefix
             return true
         }
         
         // Get count from number prefix (default 1)
         let count = Int(numberPrefix) ?? 1
         
+        // If we have a pending operator, handle motion
+        if !pendingOperator.isEmpty {
+            return handleOperatorMotion(operator: pendingOperator, motion: key, count: count * operatorCount, textView: textView)
+        }
+        
         switch key {
         // Navigation - basic movement
         case "h":
             for _ in 0..<count { moveLeft(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "j":
             for _ in 0..<count { moveDown(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "k":
             for _ in 0..<count { moveUp(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "l":
             for _ in 0..<count { moveRight(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
             
         // Word navigation
         case "w":
             for _ in 0..<count { moveWordForward(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "b":
             for _ in 0..<count { moveWordBackward(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "e":
             for _ in 0..<count { moveToEndOfWord(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
             
         // Line navigation
         case "0":
             moveToStartOfLine(textView)
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "$":
             moveToEndOfLine(textView)
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "^":
             moveToFirstNonBlank(textView)
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
             
         // Document navigation
         case "G":
@@ -153,14 +153,12 @@ class VimModeState: ObservableObject {
                 // G alone goes to end
                 moveToEndOfDocument(textView)
             }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "g":
             // Track for gg command
-            if statusMessage == "g" {
+            if statusMessage.hasSuffix("g") {
                 moveToStartOfDocument(textView)
-                statusMessage = ""
-                numberPrefix = ""
+                clearState()
             } else {
                 statusMessage = numberPrefix + "g"
             }
@@ -170,53 +168,56 @@ class VimModeState: ObservableObject {
         case "i":
             mode = .insert
             statusMessage = "-- INSERT --"
-            numberPrefix = ""
+            clearState()
         case "a":
             moveRight(textView)
             mode = .insert
             statusMessage = "-- INSERT --"
-            numberPrefix = ""
+            clearState()
         case "I":
             moveToFirstNonBlank(textView)
             mode = .insert
             statusMessage = "-- INSERT --"
-            numberPrefix = ""
+            clearState()
         case "A":
             moveToEndOfLine(textView)
             mode = .insert
             statusMessage = "-- INSERT --"
-            numberPrefix = ""
+            clearState()
         case "o":
             insertLineBelow(textView)
             mode = .insert
             statusMessage = "-- INSERT --"
-            numberPrefix = ""
+            clearState()
         case "O":
             insertLineAbove(textView)
             mode = .insert
             statusMessage = "-- INSERT --"
-            numberPrefix = ""
+            clearState()
             
         // Command mode
         case ":":
             mode = .command
             commandText = ""
             statusMessage = ":"
-            numberPrefix = ""
+            clearState()
             
         // Delete
         case "x":
             for _ in 0..<count { deleteCharacter(textView) }
-            numberPrefix = ""
-            statusMessage = ""
+            clearState()
         case "d":
             if statusMessage.hasSuffix("d") {
                 // dd - delete line(s)
-                for _ in 0..<count { deleteLine(textView) }
-                statusMessage = ""
-                numberPrefix = ""
+                let lineCount = operatorCount * count
+                for _ in 0..<lineCount { deleteLine(textView) }
+                clearState()
             } else {
-                statusMessage = numberPrefix + "d"
+                // Enter operator pending mode
+                pendingOperator = "d"
+                operatorCount = count
+                numberPrefix = ""
+                statusMessage = (count > 1 ? "\(count)" : "") + "d"
             }
             return true
             
@@ -224,15 +225,86 @@ class VimModeState: ObservableObject {
             // Check for composed commands
             if statusMessage.hasSuffix("g") && key == "g" {
                 moveToStartOfDocument(textView)
-                statusMessage = ""
-                numberPrefix = ""
+                clearState()
             } else {
-                statusMessage = ""
-                numberPrefix = ""
+                clearState()
                 return false
             }
         }
         
+        return true
+    }
+    
+    // Clear all pending state
+    private func clearState() {
+        numberPrefix = ""
+        pendingOperator = ""
+        operatorCount = 1
+        statusMessage = ""
+    }
+    
+    // Handle motion after an operator (e.g., d3w)
+    private func handleOperatorMotion(operator op: String, motion: String, count: Int, textView: NSTextView) -> Bool {
+        let startLocation = textView.selectedRange().location
+        
+        // Handle the motion to determine the range
+        switch motion {
+        case "w":
+            // Move forward count words to get end position
+            for _ in 0..<count { moveWordForward(textView) }
+        case "e":
+            for _ in 0..<count { moveToEndOfWord(textView) }
+            // Include the character at end of word
+            let range = textView.selectedRange()
+            if range.location < textView.string.count {
+                textView.setSelectedRange(NSRange(location: range.location + 1, length: 0))
+            }
+        case "b":
+            for _ in 0..<count { moveWordBackward(textView) }
+        case "h":
+            for _ in 0..<count { moveLeft(textView) }
+        case "l":
+            for _ in 0..<count { moveRight(textView) }
+        case "$":
+            moveToEndOfLine(textView)
+        case "0":
+            moveToStartOfLine(textView)
+        case "^":
+            moveToFirstNonBlank(textView)
+        case "d":
+            // dd - delete line(s)
+            for _ in 0..<count { deleteLine(textView) }
+            clearState()
+            return true
+        default:
+            clearState()
+            return false
+        }
+        
+        let endLocation = textView.selectedRange().location
+        
+        // Calculate the range to operate on
+        let rangeStart = min(startLocation, endLocation)
+        let rangeEnd = max(startLocation, endLocation)
+        let operationRange = NSRange(location: rangeStart, length: rangeEnd - rangeStart)
+        
+        // Execute the operator
+        switch op {
+        case "d":
+            if operationRange.length > 0 {
+                if textView.shouldChangeText(in: operationRange, replacementString: "") {
+                    textView.replaceCharacters(in: operationRange, with: "")
+                    textView.didChangeText()
+                }
+            }
+        default:
+            break
+        }
+        
+        // Position cursor at start of operated region
+        textView.setSelectedRange(NSRange(location: rangeStart, length: 0))
+        
+        clearState()
         return true
     }
     
