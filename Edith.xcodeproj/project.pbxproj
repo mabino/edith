@@ -34,6 +34,7 @@
 		T09 /* FileWatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T18; };
 		T0A /* SyntaxHighlighterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T19; };
 		B2C3D4E5F6789012345678A1 /* SearchEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6789012345678 /* SearchEngineTests.swift */; };
+		FMB001 /* FindReplaceManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FMT001 /* FindReplaceManagerTests.swift */; };
 		U01 /* ZoomUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = U10; };
 		U03 /* SessionRestoreUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = U12; };
 		SRB1 /* SearchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = SRU1 /* SearchUITests.swift */; };
@@ -87,6 +88,7 @@
 		T18 /* FileWatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherTests.swift; sourceTree = "<group>"; };
 		T19 /* SyntaxHighlighterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighterTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6789012345678 /* SearchEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineTests.swift; sourceTree = "<group>"; };
+		FMT001 /* FindReplaceManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindReplaceManagerTests.swift; sourceTree = "<group>"; };
 		U10 /* ZoomUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomUITests.swift; sourceTree = "<group>"; };
 		U11 /* EdithUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EdithUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		U12 /* SessionRestoreUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestoreUITests.swift; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				T18 /* FileWatcherTests.swift */,
 				T19 /* SyntaxHighlighterTests.swift */,
 				A1B2C3D4E5F6789012345678 /* SearchEngineTests.swift */,
+				FMT001 /* FindReplaceManagerTests.swift */,
 			);
 			path = EdithTests;
 			sourceTree = "<group>";
@@ -320,6 +323,7 @@
 				T09 /* FileWatcherTests.swift in Sources */,
 				T0A /* SyntaxHighlighterTests.swift in Sources */,
 				B2C3D4E5F6789012345678A1 /* SearchEngineTests.swift in Sources */,
+				FMB001 /* FindReplaceManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

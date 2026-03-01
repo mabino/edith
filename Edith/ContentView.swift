@@ -104,9 +104,12 @@ struct ContentView: View {
         .onAppear {
             startWatchingFile()
             registerWithTracker()
-            // Register this document's find/replace state with document name
-            let docName = getDocumentName()
-            FindReplaceManager.shared.registerActiveState(findReplaceState, documentName: docName)
+            
+            // Register with a delay to ensure window is set up
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                let docName = getDocumentNameForThisView()
+                FindReplaceManager.shared.registerActiveState(findReplaceState, documentName: docName)
+            }
             
             // Check for pending extracted content (from Extract All)
             if let pendingContent = ExtractedContentManager.shared.pendingContent {
@@ -124,19 +127,22 @@ struct ContentView: View {
             FindReplaceManager.shared.unregisterState(findReplaceState)
         }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { notification in
-            // Update document name when window becomes key (catches saves and other changes)
-            if let window = notification.object as? NSWindow,
-               window.contentView != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    let docName = getDocumentName()
-                    FindReplaceManager.shared.updateDocumentName(findReplaceState, name: docName)
-                }
-            }
+            // When THIS document's window becomes key, update as active and refresh name
+            guard let window = notification.object as? NSWindow,
+                  let textView = findReplaceState.textView,
+                  textView.window === window else { return }
+            
+            let docName = getDocumentNameForThisView()
+            FindReplaceManager.shared.updateDocumentName(findReplaceState, name: docName)
+            FindReplaceManager.shared.selectDocument(findReplaceState)
         }
     }
     
-    private func getDocumentName() -> String {
-        if let windowController = NSApp.keyWindow?.windowController,
+    private func getDocumentNameForThisView() -> String {
+        // Get name from the window containing our text view
+        if let textView = findReplaceState.textView,
+           let window = textView.window,
+           let windowController = window.windowController,
            let nsDoc = windowController.document as? NSDocument {
             return nsDoc.displayName
         }
