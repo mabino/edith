@@ -260,8 +260,36 @@ class FindReplaceState: ObservableObject {
         }
         
         let text = extracted.joined(separator: "\n")
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
+        
+        // Create a new document with the extracted matches
+        DispatchQueue.main.async {
+            NSDocumentController.shared.newDocument(nil)
+            
+            // Wait for the new document to be created, then set its content
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                if let window = NSApp.keyWindow,
+                   let textView = self.findTextView(in: window.contentView) {
+                    textView.string = text
+                }
+            }
+        }
+    }
+    
+    /// Find the NSTextView in a view hierarchy
+    private func findTextView(in view: NSView?) -> NSTextView? {
+        guard let view = view else { return nil }
+        
+        if let textView = view as? NSTextView {
+            return textView
+        }
+        
+        for subview in view.subviews {
+            if let found = findTextView(in: subview) {
+                return found
+            }
+        }
+        
+        return nil
     }
     
     /// Highlight all matches (for visual feedback)
