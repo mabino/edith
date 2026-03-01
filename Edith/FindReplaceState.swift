@@ -41,6 +41,7 @@ class FindReplaceState: ObservableObject {
     /// Perform search and update matches
     func performSearch() {
         guard let textView = textView, !findText.isEmpty else {
+            clearMatchHighlights()
             matches = []
             currentMatchIndex = -1
             return
@@ -66,6 +67,7 @@ class FindReplaceState: ObservableObject {
         // Reset current match if no matches found
         if matches.isEmpty {
             currentMatchIndex = -1
+            clearMatchHighlights()
         } else if currentMatchIndex < 0 {
             // Find the first match after current cursor position
             let cursorPos = textView.selectedRange().location
@@ -121,8 +123,50 @@ class FindReplaceState: ObservableObject {
     private func highlightCurrentMatch() {
         guard let textView = textView, let match = currentMatch else { return }
         
+        // First, clear any previous match highlighting
+        clearMatchHighlights()
+        
+        // Highlight all matches with a subtle background
+        highlightAllMatches()
+        
+        // Select and scroll to current match
         textView.setSelectedRange(match)
         textView.scrollRangeToVisible(match)
+    }
+    
+    /// Highlight all matches with a visible background color
+    private func highlightAllMatches() {
+        guard let textView = textView,
+              let textStorage = textView.textStorage else { return }
+        
+        // Use a high-contrast highlight color
+        let matchColor = NSColor.systemYellow.withAlphaComponent(0.4)
+        let currentMatchColor = NSColor.systemOrange.withAlphaComponent(0.6)
+        
+        textStorage.beginEditing()
+        
+        for (index, match) in matches.enumerated() {
+            let color = (index == currentMatchIndex) ? currentMatchColor : matchColor
+            textStorage.addAttribute(.backgroundColor, value: color, range: match)
+        }
+        
+        textStorage.endEditing()
+    }
+    
+    /// Clear all match highlighting
+    private func clearMatchHighlights() {
+        guard let textView = textView,
+              let textStorage = textView.textStorage else { return }
+        
+        let fullRange = NSRange(location: 0, length: textStorage.length)
+        textStorage.beginEditing()
+        textStorage.removeAttribute(.backgroundColor, range: fullRange)
+        textStorage.endEditing()
+    }
+    
+    /// Clear highlights when search is cleared
+    func clearHighlights() {
+        clearMatchHighlights()
     }
     
     /// Replace the current match
@@ -234,6 +278,7 @@ class FindReplaceState: ObservableObject {
     
     /// Clear search state
     func clear() {
+        clearMatchHighlights()
         findText = ""
         replaceText = ""
         matches = []
