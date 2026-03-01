@@ -14,9 +14,10 @@ struct EditorView: NSViewRepresentable {
     var syntaxLanguage: SyntaxLanguage
     @ObservedObject var syntaxHighlighter: SyntaxHighlighter
     @ObservedObject var findReplaceState: FindReplaceState
+    @ObservedObject var vimModeState: VimModeState
     
     func makeNSView(context: Context) -> LineNumberScrollView {
-        let scrollView = LineNumberScrollView()
+        let scrollView = LineNumberScrollView(vimModeState: vimModeState)
         let textView = scrollView.textView
         
         textView.delegate = context.coordinator
@@ -27,6 +28,9 @@ struct EditorView: NSViewRepresentable {
         
         // Wire up find/replace state to text view
         findReplaceState.textView = textView
+        
+        // Wire up vim mode state to text view
+        vimModeState.textView = textView
         
         applySettings(to: scrollView)
         
@@ -170,7 +174,7 @@ struct EditorView: NSViewRepresentable {
 // MARK: - Custom Scroll View with Line Numbers
 class LineNumberScrollView: NSView {
     let scrollView: NSScrollView
-    let textView: NSTextView
+    let textView: VimTextView
     let lineNumberView: LineNumberView
     let customLayoutManager: InvisibleCharacterLayoutManager
     
@@ -183,7 +187,7 @@ class LineNumberScrollView: NSView {
         }
     }
     
-    override init(frame: NSRect) {
+    init(frame: NSRect = .zero, vimModeState: VimModeState? = nil) {
         // Create text storage
         let textStorage = NSTextStorage()
         
@@ -197,8 +201,9 @@ class LineNumberScrollView: NSView {
         textContainer.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         customLayoutManager.addTextContainer(textContainer)
         
-        // Create text view with custom text system
-        textView = NSTextView(frame: .zero, textContainer: textContainer)
+        // Create vim-aware text view with custom text system
+        textView = VimTextView(frame: .zero, textContainer: textContainer)
+        textView.vimModeState = vimModeState
         textView.isRichText = false
         textView.allowsUndo = true
         textView.isAutomaticQuoteSubstitutionEnabled = false
@@ -275,6 +280,65 @@ class LineNumberScrollView: NSView {
             lineNumberView.frame = .zero
             scrollView.frame = bounds
         }
+    }
+}
+
+// MARK: - Vim-aware Text View
+class VimTextView: NSTextView {
+    weak var vimModeState: VimModeState?
+    
+    override func keyDown(with event: NSEvent) {
+        guard let vimState = vimModeState else {
+            super.keyDown(with: event)
+            return
+        }
+        
+        // Check for Esc key
+        if event.keyCode == 53 { // Esc key
+            if vimState.handleEscPress() {
+                return // Double-tap handled mode toggle
+            }
+            // Single Esc - let it pass for now, will be handled by delayed check
+            return
+        }
+        
+        // Handle based on current mode
+        switch vimState.mode {
+        case .insert:
+            // Normal text editing
+            super.keyDown(with: event)
+            
+        case .normal:
+            // Vim normal mode - intercept keys
+            if let chars = event.charactersIgnoringModifiers {
+                for char in chars {
+                    if vimState.handleNormalModeKey(String(char), modifiers: event.modifierFlags) {
+                        return
+                    }
+                }
+            }
+            // Unhandled key in normal mode - ignore (don't insert text)
+            
+        case .command:
+            // Command mode - handle typing in command bar
+            if event.keyCode == 36 { // Return key
+                _ = vimState.handleCommandKey("\r")
+            } else if event.keyCode == 51 { // Delete key
+                vimState.deleteFromCommand()
+            } else if let chars = event.characters {
+                for char in chars {
+                    vimState.appendToCommand(char)
+                }
+            }
+        }
+    }
+    
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        // Allow standard key equivalents (Cmd+C, Cmd+V, etc.) in all modes
+        if event.modifierFlags.contains(.command) {
+            return super.performKeyEquivalent(with: event)
+        }
+        return super.performKeyEquivalent(with: event)
     }
 }
 

@@ -53,42 +53,57 @@ struct ContentView: View {
     @StateObject private var fileWatcher = FileWatcher()
     @StateObject private var syntaxHighlighter = SyntaxHighlighter()
     @StateObject private var findReplaceState = FindReplaceState()
+    @StateObject private var vimModeState = VimModeState()
     
     @State private var showFileChangedBanner = false
     @State private var cursorPosition = CursorPosition()
     
     var body: some View {
-        VStack(spacing: 0) {
-            // File changed banner
-            if showFileChangedBanner {
-                FileChangedBanner(
-                    onReload: {
-                        reloadFromDisk()
-                    },
-                    onDismiss: {
-                        showFileChangedBanner = false
-                        fileWatcher.acknowledgeChange()
-                    }
+        ZStack {
+            VStack(spacing: 0) {
+                // File changed banner
+                if showFileChangedBanner {
+                    FileChangedBanner(
+                        onReload: {
+                            reloadFromDisk()
+                        },
+                        onDismiss: {
+                            showFileChangedBanner = false
+                            fileWatcher.acknowledgeChange()
+                        }
+                    )
+                }
+                
+                EditorView(
+                    text: $document.text,
+                    zoomState: zoomState,
+                    cursorPosition: $cursorPosition,
+                    syntaxLanguage: document.syntaxLanguage,
+                    syntaxHighlighter: syntaxHighlighter,
+                    findReplaceState: findReplaceState,
+                    vimModeState: vimModeState
                 )
+                .environmentObject(settingsManager)
+                
+                // Vim Command Bar (shown in command mode)
+                if vimModeState.mode == .command {
+                    VimCommandBar(vimState: vimModeState)
+                }
+                
+                // Status Bar
+                if settingsManager.showStatusBar {
+                    StatusBar(
+                        document: $document,
+                        cursorPosition: $cursorPosition,
+                        detectedLanguage: syntaxHighlighter.detectedLanguage,
+                        vimModeState: vimModeState
+                    )
+                }
             }
             
-            EditorView(
-                text: $document.text,
-                zoomState: zoomState,
-                cursorPosition: $cursorPosition,
-                syntaxLanguage: document.syntaxLanguage,
-                syntaxHighlighter: syntaxHighlighter,
-                findReplaceState: findReplaceState
-            )
-            .environmentObject(settingsManager)
-            
-            // Status Bar
-            if settingsManager.showStatusBar {
-                StatusBar(
-                    document: $document,
-                    cursorPosition: $cursorPosition,
-                    detectedLanguage: syntaxHighlighter.detectedLanguage
-                )
+            // Green glow border for vim normal mode
+            if vimModeState.mode != .insert {
+                VimModeGlowOverlay()
             }
         }
         .focusedSceneValue(\.documentZoomState, zoomState)

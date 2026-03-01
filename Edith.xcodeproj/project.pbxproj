@@ -19,6 +19,7 @@
 		010 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109; };
 		011 /* SyntaxLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110; };
 		012 /* SyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111; };
+		013 /* VimMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 113; };
 		07B5AD9E7F7613BAE9D1CC99 /* SearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F507FD22BD2CD5BE0FC427 /* SearchEngine.swift */; };
 		096AB0675ABCC9CC23143B31 /* FindReplaceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4108A48CED87CFEC1297 /* FindReplaceState.swift */; };
 		FRB10001 /* FindReplaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FRM10001 /* FindReplaceManager.swift */; };
@@ -69,6 +70,7 @@
 		109 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		110 /* SyntaxLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxLanguage.swift; sourceTree = "<group>"; };
 		111 /* SyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighter.swift; sourceTree = "<group>"; };
+		113 /* VimMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VimMode.swift; sourceTree = "<group>"; };
 		24F507FD22BD2CD5BE0FC427 /* SearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngine.swift; sourceTree = "<group>"; };
 		0A3F4108A48CED87CFEC1297 /* FindReplaceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindReplaceState.swift; sourceTree = "<group>"; };
 		FRM10001 /* FindReplaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindReplaceManager.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				109 /* StatusBar.swift */,
 				110 /* SyntaxLanguage.swift */,
 				111 /* SyntaxHighlighter.swift */,
+				113 /* VimMode.swift */,
 				D948C8E9C04CD3E50F0F6C0D /* FindReplaceWindow.swift */,
 				0A3F4108A48CED87CFEC1297 /* FindReplaceState.swift */,
 				FRM10001 /* FindReplaceManager.swift */,
@@ -302,6 +305,7 @@
 				010 /* StatusBar.swift in Sources */,
 				011 /* SyntaxLanguage.swift in Sources */,
 				012 /* SyntaxHighlighter.swift in Sources */,
+				013 /* VimMode.swift in Sources */,
 				11EC127108096AEEBBD68E92 /* FindReplaceWindow.swift in Sources */,
 				096AB0675ABCC9CC23143B31 /* FindReplaceState.swift in Sources */,
 				FRB10001 /* FindReplaceManager.swift in Sources */,
