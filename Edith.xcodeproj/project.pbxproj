@@ -21,6 +21,7 @@
 		012 /* SyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111; };
 		07B5AD9E7F7613BAE9D1CC99 /* SearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F507FD22BD2CD5BE0FC427 /* SearchEngine.swift */; };
 		096AB0675ABCC9CC23143B31 /* FindReplaceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3F4108A48CED87CFEC1297 /* FindReplaceState.swift */; };
+		FRB10001 /* FindReplaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FRM10001 /* FindReplaceManager.swift */; };
 		11EC127108096AEEBBD68E92 /* FindReplaceWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D948C8E9C04CD3E50F0F6C0D /* FindReplaceWindow.swift */; };
 		P01 /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = P02 /* HighlightSwift */; };
 		T01 /* LineNumberGutterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = T10; };
@@ -69,6 +70,7 @@
 		111 /* SyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighter.swift; sourceTree = "<group>"; };
 		24F507FD22BD2CD5BE0FC427 /* SearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngine.swift; sourceTree = "<group>"; };
 		0A3F4108A48CED87CFEC1297 /* FindReplaceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindReplaceState.swift; sourceTree = "<group>"; };
+		FRM10001 /* FindReplaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindReplaceManager.swift; sourceTree = "<group>"; };
 		D948C8E9C04CD3E50F0F6C0D /* FindReplaceWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindReplaceWindow.swift; sourceTree = "<group>"; };
 		112 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		201 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 				111 /* SyntaxHighlighter.swift */,
 				D948C8E9C04CD3E50F0F6C0D /* FindReplaceWindow.swift */,
 				0A3F4108A48CED87CFEC1297 /* FindReplaceState.swift */,
+				FRM10001 /* FindReplaceManager.swift */,
 				24F507FD22BD2CD5BE0FC427 /* SearchEngine.swift */,
 				112 /* Info.plist */,
 				201 /* Assets.xcassets */,
@@ -298,6 +301,7 @@
 				012 /* SyntaxHighlighter.swift in Sources */,
 				11EC127108096AEEBBD68E92 /* FindReplaceWindow.swift in Sources */,
 				096AB0675ABCC9CC23143B31 /* FindReplaceState.swift in Sources */,
+				FRB10001 /* FindReplaceManager.swift in Sources */,
 				07B5AD9E7F7613BAE9D1CC99 /* SearchEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

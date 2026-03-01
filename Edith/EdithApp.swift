@@ -195,7 +195,7 @@ struct ZoomCommands: Commands {
 
 // Search menu commands
 struct SearchCommands: Commands {
-    @FocusedValue(\.findReplaceState) var findReplaceState
+    @ObservedObject private var findReplaceManager = FindReplaceManager.shared
     
     var body: some Commands {
         CommandMenu("Search") {
@@ -213,16 +213,16 @@ struct SearchCommands: Commands {
             Divider()
             
             Button("Find Next") {
-                findReplaceState?.findNext()
+                findReplaceManager.findNext()
             }
             .keyboardShortcut("g", modifiers: .command)
-            .disabled(findReplaceState == nil)
+            .disabled(findReplaceManager.activeState == nil)
             
             Button("Find Previous") {
-                findReplaceState?.findPrevious()
+                findReplaceManager.findPrevious()
             }
             .keyboardShortcut("g", modifiers: [.command, .shift])
-            .disabled(findReplaceState == nil)
+            .disabled(findReplaceManager.activeState == nil)
         }
     }
 }
@@ -231,7 +231,7 @@ struct SearchCommands: Commands {
 struct EdithApp: App {
     @NSApplicationDelegateAdaptor(EdithAppDelegate.self) var appDelegate
     @StateObject private var settingsManager = SettingsManager()
-    @FocusedValue(\.findReplaceState) var findReplaceState
+    @ObservedObject private var findReplaceManager = FindReplaceManager.shared
     @Environment(\.openWindow) var openWindow
     
     var body: some Scene {
@@ -263,9 +263,9 @@ struct EdithApp: App {
                 .environmentObject(settingsManager)
         }
         
-        // Find & Replace window
+        // Find & Replace window - uses the shared manager to get active document's state
         Window("Find & Replace", id: "find-replace") {
-            if let state = findReplaceState {
+            if let state = findReplaceManager.activeState {
                 FindReplaceView(state: state)
             } else {
                 Text("No document selected")

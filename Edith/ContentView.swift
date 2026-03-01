@@ -104,10 +104,14 @@ struct ContentView: View {
         .onAppear {
             startWatchingFile()
             registerWithTracker()
+            // Register this document's find/replace state as active
+            FindReplaceManager.shared.registerActiveState(findReplaceState)
         }
         .onDisappear {
             fileWatcher.stopWatching()
             unregisterFromTracker()
+            // Unregister when document closes
+            FindReplaceManager.shared.unregisterState(findReplaceState)
         }
     }
     
