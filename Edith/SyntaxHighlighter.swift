@@ -33,8 +33,8 @@ class SyntaxHighlighter: ObservableObject {
         // Cancel any pending debounce
         debounceTask?.cancel()
         
-        // Plain text = clear highlighting
-        if language == .plain {
+        // Plain text or auto = no highlighting
+        if language == .plain || language == .auto {
             clearHighlighting(textStorage: textStorage, baseFont: baseFont)
             detectedLanguage = nil
             lastHighlightedText = text
@@ -61,8 +61,8 @@ class SyntaxHighlighter: ObservableObject {
         textStorage: NSTextStorage,
         baseFont: NSFont
     ) async {
-        // Plain text = skip highlighting entirely
-        if language == .plain {
+        // Plain text or auto = no highlighting
+        if language == .plain || language == .auto {
             clearHighlighting(textStorage: textStorage, baseFont: baseFont)
             detectedLanguage = nil
             lastHighlightedText = text
@@ -78,9 +78,10 @@ class SyntaxHighlighter: ObservableObject {
         textStorage: NSTextStorage,
         baseFont: NSFont
     ) async {
-        // Plain text should not reach here, but guard anyway
-        if language == .plain {
+        // Plain text or auto (which defaults to plain for unknown files) should not highlight
+        if language == .plain || language == .auto {
             clearHighlighting(textStorage: textStorage, baseFont: baseFont)
+            detectedLanguage = nil
             return
         }
         
@@ -106,11 +107,13 @@ class SyntaxHighlighter: ObservableObject {
             let result: HighlightResult
             let colors = SyntaxHighlighter.colors(for: NSApp.effectiveAppearance)
             
-            if let langId = language.highlightLanguage {
-                result = try await highlight.request(text, mode: .languageAlias(langId), colors: colors)
-            } else {
-                result = try await highlight.request(text, mode: .automatic, colors: colors)
+            // Always use specific language - never auto-detect
+            guard let langId = language.highlightLanguage else {
+                clearHighlighting(textStorage: textStorage, baseFont: baseFont)
+                return
             }
+            
+            result = try await highlight.request(text, mode: .languageAlias(langId), colors: colors)
             
             // Update detected language
             detectedLanguage = result.languageName
