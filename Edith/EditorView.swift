@@ -48,6 +48,10 @@ struct EditorView: NSViewRepresentable {
     func updateNSView(_ scrollView: LineNumberScrollView, context: Context) {
         let textView = scrollView.textView
         
+        // Update vim mode state reference (may change when setting toggled)
+        textView.vimModeState = vimModeState
+        vimModeState?.textView = textView
+        
         // Check if text changed externally (e.g., file reload)
         let textChanged = textView.string != text
         if textChanged {
