@@ -96,7 +96,8 @@ struct ContentView: View {
                         document: $document,
                         cursorPosition: $cursorPosition,
                         detectedLanguage: syntaxHighlighter.detectedLanguage,
-                        vimModeState: settingsManager.enableVimMode ? vimModeState : nil
+                        vimModeState: vimModeState,
+                        vimModeEnabled: settingsManager.enableVimMode
                     )
                 }
             }
