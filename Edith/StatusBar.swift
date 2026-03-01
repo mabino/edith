@@ -9,9 +9,21 @@ struct StatusBar: View {
     @Binding var document: TextDocument
     @Binding var cursorPosition: CursorPosition
     var detectedLanguage: String?
+    @ObservedObject var vimModeState: VimModeState
+    var vimModeEnabled: Bool
     
     var body: some View {
         HStack(spacing: 16) {
+            // Vim mode indicator (only shown when vim is enabled and not in insert mode)
+            if vimModeEnabled && vimModeState.mode != .insert {
+                Text(vimModeState.statusMessage.isEmpty ? modeIndicator : vimModeState.statusMessage)
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundColor(.green)
+                
+                Divider()
+                    .frame(height: 12)
+            }
+            
             // Cursor position: Line and Column
             Text("Ln \(cursorPosition.line), Col \(cursorPosition.column)")
                 .font(.system(size: 11, design: .monospaced))
@@ -134,6 +146,17 @@ struct StatusBar: View {
             return "Auto-Detect"
         }
         return document.syntaxLanguage.displayName
+    }
+    
+    private var modeIndicator: String {
+        switch vimModeState.mode {
+        case .insert:
+            return ""
+        case .normal:
+            return "-- NORMAL --"
+        case .command:
+            return "-- COMMAND --"
+        }
     }
     
     @ViewBuilder

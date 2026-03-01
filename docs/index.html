@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edith - macOS Text Editor</title>
+    <style>
+        :root {
+            --lavender: #E6E6FA;
+            --lavender-dark: #B8A9C9;
+            --yellow: #FFD93D;
+            --text: #2D3748;
+            --text-light: #718096;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--lavender) 0%, #fff 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            padding: 4rem 0 3rem;
+        }
+        
+        .logo {
+            width: 128px;
+            height: 128px;
+            background: var(--lavender);
+            border-radius: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            font-weight: bold;
+            color: var(--yellow);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .badge {
+            background: var(--text);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+        }
+        
+        .badge.swift { background: #F05138; }
+        .badge.macos { background: #007AFF; }
+        .badge.license { background: #22C55E; }
+        
+        .cta {
+            display: inline-flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: var(--text);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 2px solid var(--text);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+        
+        .feature {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+        
+        .feature h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feature p {
+            color: var(--text-light);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+        
+        .shortcuts {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+            margin: 2rem 0;
+        }
+        
+        .shortcuts h2 {
+            margin-bottom: 1rem;
+        }
+        
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .shortcut {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .shortcut kbd {
+            background: #f4f4f5;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        
+        .vim-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .vim-section h2 {
+            color: #22C55E;
+            margin-bottom: 1rem;
+        }
+        
+        .vim-section p {
+            color: #a0aec0;
+            margin-bottom: 1rem;
+        }
+        
+        .vim-commands {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .vim-cmd {
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .vim-cmd span {
+            color: #22C55E;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-light);
+        }
+        
+        footer a {
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">E</div>
+            <h1>Edith</h1>
+            <p class="tagline">A native macOS text editor built with Swift and SwiftUI</p>
+            <div class="badges">
+                <span class="badge macos">macOS 13.0+</span>
+                <span class="badge swift">Swift 5.9</span>
+                <span class="badge license">MIT License</span>
+            </div>
+            <div class="cta">
+                <a href="https://github.com/mabino/edith" class="btn btn-primary">View on GitHub</a>
+                <a href="https://github.com/mabino/edith/releases" class="btn btn-secondary">Download</a>
+            </div>
+        </header>
+        
+        <section class="features">
+            <div class="feature">
+                <h3>📝 Multi-Document</h3>
+                <p>Work with multiple files in a tabbed interface with session restore.</p>
+            </div>
+            <div class="feature">
+                <h3>🔢 Line Numbers</h3>
+                <p>Click or drag line numbers to select entire lines. Cmd+click for non-contiguous.</p>
+            </div>
+            <div class="feature">
+                <h3>🎨 Syntax Highlighting</h3>
+                <p>Support for 50+ programming languages via HighlightSwift.</p>
+            </div>
+            <div class="feature">
+                <h3>🔍 Find & Replace</h3>
+                <p>Full regex/PCRE support with document selector and Extract All.</p>
+            </div>
+            <div class="feature">
+                <h3>👁️ Invisible Characters</h3>
+                <p>See spaces, tabs, and line endings with custom character rendering.</p>
+            </div>
+            <div class="feature">
+                <h3>🔄 File Monitoring</h3>
+                <p>Automatic detection when files change on disk with reload option.</p>
+            </div>
+        </section>
+        
+        <section class="shortcuts">
+            <h2>⌨️ Keyboard Shortcuts</h2>
+            <div class="shortcut-grid">
+                <div class="shortcut"><span>New Document</span><kbd>⌘N</kbd></div>
+                <div class="shortcut"><span>Open</span><kbd>⌘O</kbd></div>
+                <div class="shortcut"><span>Save</span><kbd>⌘S</kbd></div>
+                <div class="shortcut"><span>Settings</span><kbd>⌘,</kbd></div>
+                <div class="shortcut"><span>Find & Replace</span><kbd>⌘F</kbd></div>
+                <div class="shortcut"><span>Line Numbers</span><kbd>⇧⌘L</kbd></div>
+                <div class="shortcut"><span>Status Bar</span><kbd>⇧⌘/</kbd></div>
+                <div class="shortcut"><span>Zoom In</span><kbd>⌘=</kbd></div>
+            </div>
+        </section>
+        
+        <section class="vim-section">
+            <h2>🟢 Vim-like Mode (Experimental)</h2>
+            <p>Enable in Settings → General. Double-tap Esc to toggle. Green glow indicates normal mode.</p>
+            <div class="vim-commands">
+                <div class="vim-cmd"><span>h j k l</span> navigate</div>
+                <div class="vim-cmd"><span>w b e</span> by word</div>
+                <div class="vim-cmd"><span>gg G</span> start/end</div>
+                <div class="vim-cmd"><span>i a o</span> insert</div>
+                <div class="vim-cmd"><span>x dd</span> delete</div>
+                <div class="vim-cmd"><span>:w :q</span> save/quit</div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>MIT License © 2026 <a href="https://github.com/mabino">Michael Bino</a></p>
+        </footer>
+    </div>
+</body>
+</html>
