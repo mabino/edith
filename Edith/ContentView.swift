@@ -106,6 +106,15 @@ struct ContentView: View {
             registerWithTracker()
             // Register this document's find/replace state as active
             FindReplaceManager.shared.registerActiveState(findReplaceState)
+            
+            // Check for pending extracted content (from Extract All)
+            if let pendingContent = ExtractedContentManager.shared.pendingContent {
+                ExtractedContentManager.shared.pendingContent = nil
+                // Set document text after a brief delay to ensure view is ready
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    document.text = pendingContent
+                }
+            }
         }
         .onDisappear {
             fileWatcher.stopWatching()

@@ -6,6 +6,14 @@
 import Foundation
 import AppKit
 
+/// Manager for passing extracted content to new documents
+@MainActor
+final class ExtractedContentManager {
+    static let shared = ExtractedContentManager()
+    var pendingContent: String?
+    private init() {}
+}
+
 /// Observable state for Find & Replace functionality
 @MainActor
 class FindReplaceState: ObservableObject {
@@ -243,7 +251,7 @@ class FindReplaceState: ObservableObject {
         currentMatchIndex = -1
     }
     
-    /// Extract all matches to clipboard
+    /// Extract all matches to a new document
     func extractAll() {
         guard let textView = textView else { return }
         
@@ -261,35 +269,11 @@ class FindReplaceState: ObservableObject {
         
         let text = extracted.joined(separator: "\n")
         
-        // Create a new document with the extracted matches
-        DispatchQueue.main.async {
-            NSDocumentController.shared.newDocument(nil)
-            
-            // Wait for the new document to be created, then set its content
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                if let window = NSApp.keyWindow,
-                   let textView = self.findTextView(in: window.contentView) {
-                    textView.string = text
-                }
-            }
-        }
-    }
-    
-    /// Find the NSTextView in a view hierarchy
-    private func findTextView(in view: NSView?) -> NSTextView? {
-        guard let view = view else { return nil }
+        // Store the extracted text for the new document to pick up
+        ExtractedContentManager.shared.pendingContent = text
         
-        if let textView = view as? NSTextView {
-            return textView
-        }
-        
-        for subview in view.subviews {
-            if let found = findTextView(in: subview) {
-                return found
-            }
-        }
-        
-        return nil
+        // Create a new document
+        NSDocumentController.shared.newDocument(nil)
     }
     
     /// Highlight all matches (for visual feedback)
