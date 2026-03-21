@@ -4,286 +4,305 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edith - macOS Text Editor</title>
+    <meta name="description" content="A native macOS text editor built with Swift and SwiftUI, featuring syntax highlighting, multi-document support, and an experimental Vim mode.">
     <style>
         :root {
+            --bg: #ffffff;
+            --fg: #2D3748;
+            --secondary: #718096;
+            --accent: #B8A9C9;
+            --highlight: #FFD93D;
+            --card-bg: #F7FAFC;
+            --border: #E2E8F0;
+            --radius: 12px;
             --lavender: #E6E6FA;
-            --lavender-dark: #B8A9C9;
-            --yellow: #FFD93D;
-            --text: #2D3748;
-            --text-light: #718096;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1A202C;
+                --fg: #F7FAFC;
+                --secondary: #A0AEC0;
+                --accent: #B8A9C9;
+                --card-bg: #2D3748;
+                --border: #4A5568;
+            }
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, var(--lavender) 0%, #fff 100%);
-            min-height: 100vh;
-            color: var(--text);
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
-        
+
         .container {
-            max-width: 900px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 0 20px;
         }
-        
+
+        nav {
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--lavender);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--highlight);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
         header {
             text-align: center;
-            padding: 4rem 0 3rem;
+            padding: 80px 0 60px;
         }
-        
-        .logo {
-            width: 128px;
-            height: 128px;
-            background: var(--lavender);
-            border-radius: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 72px;
-            font-weight: bold;
-            color: var(--yellow);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-        
+
         h1 {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin: 0 0 20px;
+            letter-spacing: -0.015em;
         }
-        
-        .tagline {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            margin-bottom: 2rem;
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
         }
-        
-        .badges {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-        
-        .badge {
-            background: var(--text);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.875rem;
-        }
-        
-        .badge.swift { background: #F05138; }
-        .badge.macos { background: #007AFF; }
-        .badge.license { background: #22C55E; }
-        
+
         .cta {
-            display: inline-flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .btn {
             display: inline-block;
-            padding: 0.875rem 2rem;
-            border-radius: 8px;
-            text-decoration: none;
+            background-color: var(--fg);
+            color: var(--bg);
+            padding: 12px 24px;
+            border-radius: 25px;
             font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            transition: transform 0.2s, opacity 0.2s;
         }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+        .cta:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
         }
-        
-        .btn-primary {
-            background: var(--text);
-            color: white;
+
+        .version-info {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: var(--secondary);
         }
-        
-        .btn-secondary {
-            background: white;
-            color: var(--text);
-            border: 2px solid var(--text);
-        }
-        
+
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 3rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
         }
-        
-        .feature {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--radius);
+            text-align: center;
+            transition: transform 0.3s;
         }
-        
-        .feature h3 {
-            font-size: 1.125rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+
+        .feature-card:hover {
+            transform: translateY(-5px);
         }
-        
-        .feature p {
-            color: var(--text-light);
-            font-size: 0.9375rem;
-            line-height: 1.6;
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
         }
-        
-        .shortcuts {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-            margin: 2rem 0;
+
+        .feature-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.4rem;
         }
-        
-        .shortcuts h2 {
-            margin-bottom: 1rem;
+
+        .feature-card p {
+            color: var(--secondary);
+            margin: 0;
         }
-        
+
+        .section-title {
+            text-align: center;
+            margin-top: 80px;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
         .shortcut-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
+            gap: 1.5rem;
+            margin-bottom: 80px;
         }
-        
-        .shortcut {
+
+        .shortcut-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eee;
+            align-items: center;
+            padding: 12px 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
-        
-        .shortcut kbd {
-            background: #f4f4f5;
-            padding: 0.25rem 0.5rem;
+
+        .shortcut-item kbd {
+            background: var(--bg);
+            padding: 4px 8px;
             border-radius: 4px;
+            border: 1px solid var(--border);
             font-family: monospace;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
         }
-        
+
         .vim-section {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin: 2rem 0;
+            border-radius: var(--radius);
+            padding: 60px;
+            margin: 80px 0;
+            text-align: center;
         }
-        
+
         .vim-section h2 {
             color: #22C55E;
-            margin-bottom: 1rem;
+            margin-bottom: 20px;
         }
-        
-        .vim-section p {
-            color: #a0aec0;
-            margin-bottom: 1rem;
-        }
-        
+
         .vim-commands {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0.5rem;
+            gap: 15px;
+            margin-top: 30px;
         }
-        
+
         .vim-cmd {
             background: rgba(255,255,255,0.1);
-            padding: 0.5rem;
-            border-radius: 4px;
+            padding: 10px;
+            border-radius: 6px;
             font-family: monospace;
         }
-        
+
         .vim-cmd span {
             color: #22C55E;
+            font-weight: bold;
         }
-        
+
         footer {
             text-align: center;
-            padding: 3rem 0;
-            color: var(--text-light);
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+            color: var(--secondary);
+            font-size: 0.9rem;
         }
-        
+
         footer a {
-            color: var(--text);
+            color: var(--fg);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <nav>
+            <a href="#" class="logo">
+                <div class="logo-icon">E</div>
+                Edith
+            </a>
+            <a href="https://github.com/binoio/edith" class="cta" style="background: none; color: var(--fg); padding: 0;">GitHub</a>
+        </nav>
+
         <header>
-            <div class="logo">E</div>
             <h1>Edith</h1>
-            <p class="tagline">A native macOS text editor built with Swift and SwiftUI</p>
-            <div class="badges">
-                <span class="badge macos">macOS 13.0+</span>
-                <span class="badge swift">Swift 5.9</span>
-                <span class="badge license">MIT License</span>
-            </div>
-            <div class="cta">
-                <a href="https://github.com/mabino/edith/releases/latest/download/Edith.dmg" class="btn btn-primary">Download DMG</a>
-                <a href="https://github.com/mabino/edith" class="btn btn-secondary">View on GitHub</a>
-            </div>
+            <p class="subtitle">A native macOS text editor built with Swift and SwiftUI, designed for speed and simplicity.</p>
+            <a href="https://github.com/binoio/edith/releases/latest" class="cta" id="download-btn">Download Latest Release</a>
+            <span class="version-info">Requires macOS 13.0 or later</span>
         </header>
-        
+
+        <script>
+            async function updateDownloadLink() {
+                try {
+                    const response = await fetch('https://api.github.com/repos/binoio/edith/releases/latest');
+                    const data = await response.json();
+                    const dmgAsset = data.assets.find(asset => asset.name.endsWith('.dmg')) || data.assets.find(asset => asset.name.endsWith('.zip'));
+                    
+                    if (dmgAsset) {
+                        const btn = document.getElementById('download-btn');
+                        btn.href = dmgAsset.browser_download_url;
+                        btn.innerText = `Download ${data.tag_name}`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching latest release:', error);
+                }
+            }
+            updateDownloadLink();
+        </script>
+
         <section class="features">
-            <div class="feature">
-                <h3>📝 Multi-Document</h3>
-                <p>Work with multiple files in a tabbed interface with session restore.</p>
+            <div class="feature-card">
+                <span class="feature-icon">📝</span>
+                <h3>Multi-Document</h3>
+                <p>Work with multiple files in a tabbed interface with automatic session restore.</p>
             </div>
-            <div class="feature">
-                <h3>🔢 Line Numbers</h3>
-                <p>Click or drag line numbers to select entire lines. Cmd+click for non-contiguous.</p>
+            <div class="feature-card">
+                <span class="feature-icon">🎨</span>
+                <h3>Syntax Highlighting</h3>
+                <p>Support for 50+ programming languages with high-performance rendering.</p>
             </div>
-            <div class="feature">
-                <h3>🎨 Syntax Highlighting</h3>
-                <p>Support for 50+ programming languages via HighlightSwift.</p>
-            </div>
-            <div class="feature">
-                <h3>🔍 Find & Replace</h3>
-                <p>Full regex/PCRE support with document selector and Extract All.</p>
-            </div>
-            <div class="feature">
-                <h3>👁️ Invisible Characters</h3>
-                <p>See spaces, tabs, and line endings with custom character rendering.</p>
-            </div>
-            <div class="feature">
-                <h3>🔄 File Monitoring</h3>
-                <p>Automatic detection when files change on disk with reload option.</p>
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3>Regex Search</h3>
+                <p>Powerful find and replace with full PCRE support and "Extract All" capabilities.</p>
             </div>
         </section>
-        
-        <section class="shortcuts">
-            <h2>⌨️ Keyboard Shortcuts</h2>
-            <div class="shortcut-grid">
-                <div class="shortcut"><span>New Document</span><kbd>⌘N</kbd></div>
-                <div class="shortcut"><span>Open</span><kbd>⌘O</kbd></div>
-                <div class="shortcut"><span>Save</span><kbd>⌘S</kbd></div>
-                <div class="shortcut"><span>Settings</span><kbd>⌘,</kbd></div>
-                <div class="shortcut"><span>Find & Replace</span><kbd>⌘F</kbd></div>
-                <div class="shortcut"><span>Line Numbers</span><kbd>⇧⌘L</kbd></div>
-                <div class="shortcut"><span>Status Bar</span><kbd>⇧⌘/</kbd></div>
-                <div class="shortcut"><span>Zoom In</span><kbd>⌘=</kbd></div>
-            </div>
-        </section>
-        
+
+        <h2 class="section-title">Keyboard Shortcuts</h2>
+        <div class="shortcut-grid">
+            <div class="shortcut-item"><span>New Document</span><kbd>⌘N</kbd></div>
+            <div class="shortcut-item"><span>Open File</span><kbd>⌘O</kbd></div>
+            <div class="shortcut-item"><span>Save</span><kbd>⌘S</kbd></div>
+            <div class="shortcut-item"><span>Find & Replace</span><kbd>⌘F</kbd></div>
+            <div class="shortcut-item"><span>Settings</span><kbd>⌘,</kbd></div>
+            <div class="shortcut-item"><span>Line Numbers</span><kbd>⇧⌘L</kbd></div>
+        </div>
+
         <section class="vim-section">
-            <h2>🟢 Vim-like Mode (Experimental)</h2>
-            <p>Enable in Settings → General. Double-tap Esc to toggle. Green glow indicates normal mode.</p>
+            <h2>🟢 Vim-like Mode</h2>
+            <p>Experimental mode for keyboard-driven editing. Enable in Settings → General.</p>
             <div class="vim-commands">
                 <div class="vim-cmd"><span>h j k l</span> navigate</div>
                 <div class="vim-cmd"><span>w b e</span> by word</div>
@@ -293,9 +312,10 @@
                 <div class="vim-cmd"><span>:w :q</span> save/quit</div>
             </div>
         </section>
-        
+
         <footer>
-            <p>MIT License © 2026 <a href="https://github.com/mabino">Michael Bino</a></p>
+            <p>&copy; 2026 Michael Bino</p>
+            <p>Released under the MIT License. <a href="https://github.com/binoio/edith">View on GitHub</a></p>
         </footer>
     </div>
 </body>
